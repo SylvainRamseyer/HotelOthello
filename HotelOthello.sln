@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelOthello", "HotelOthello.csproj", "{A9B7C8C4-C0A7-4BF2-8E9A-8BED5D8F19D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelOthello", "HotelOthello\HotelOthello.csproj", "{A9B7C8C4-C0A7-4BF2-8E9A-8BED5D8F19D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelOthelloTester", "..\HoteOthelloTester\HotelOthelloTester.csproj", "{2DCC865B-1565-43C5-B4E3-3383D6E68F04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelOthelloTester", "HotelOthelloTester\HotelOthelloTester.csproj", "{2DCC865B-1565-43C5-B4E3-3383D6E68F04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
