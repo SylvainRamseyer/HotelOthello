@@ -7,7 +7,7 @@
         public bool White
         {
             get { return white; }
-            set { white = value; }
+            set { white = value; black = !value; }
         }
 
         private bool black;
@@ -15,13 +15,17 @@
         public bool Black
         {
             get { return black; }
-            set { black = value; }
+            set { black = value; white = !value; }
         }
 
-        public bool isTaken()
+        public bool IsTaken
         {
-            return white || black;
+            get { return white || black; }
         }
+
+        // juste des raccourcis
+        public void B() { Black = true; }
+        public void W() { White = true; }
 
         public override string ToString()
         {

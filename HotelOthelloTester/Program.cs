@@ -16,6 +16,8 @@ namespace HotelOthelloTester
             Console.WriteLine(board.ToString());
             board.Tiles[2, 3].Black = true;
             Console.WriteLine(board.ToString());
+            board.Tiles[2, 3].White = true;
+            Console.WriteLine(board.ToString());
             Console.ReadKey();  
         }
     }
