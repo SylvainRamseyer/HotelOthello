@@ -28,7 +28,7 @@ namespace HotelOthello
                 str.Append($"{i} ");
                 for (int j=0; j<8; j++)
                 {
-                    str.Append($"{tiles[i, j].ToString()} ");
+                    str.Append($"{tiles[i, j]} ");
                 }
                 str.Append("\n");
             }
