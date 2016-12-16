@@ -14,7 +14,5 @@ namespace HotelOthello
     public partial class App : Application
     {
         Board board = new Board();
-
-        Console.WriteLine(board.Tiles);
     }
 }

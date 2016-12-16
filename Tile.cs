@@ -1,6 +1,6 @@
 ﻿namespace HotelOthello
 {
-    internal class Tile
+    public struct Tile
     {
         private bool isTaken;
 
@@ -17,6 +17,11 @@
             get { return isWhite; }
             set { isWhite = value; }
         }
-        
+
+        public override string ToString()
+        {
+            return isTaken?(isWhite?"w":"b"):"_";
+        }
+
     }
 }
