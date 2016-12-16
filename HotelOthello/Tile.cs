@@ -2,25 +2,31 @@
 {
     public struct Tile
     {
-        private bool isTaken;
+        private bool white;
 
-        public bool IsTaken
+        public bool White
         {
-            get { return isTaken; }
-            set { isTaken = value; }
+            get { return white; }
+            set { white = value; }
         }
 
-        private bool isWhite;
+        private bool black;
 
-        public bool IsWhite
+        public bool Black
         {
-            get { return isWhite; }
-            set { isWhite = value; }
+            get { return black; }
+            set { black = value; }
+        }
+
+        public bool isTaken()
+        {
+            return white || black;
         }
 
         public override string ToString()
         {
-            return isTaken?(isWhite?"w":"b"):"_";
+            // si white, retourne w, sinon si blanc, retourne b, sinon retourne _
+            return white ? "w" : black ? "b" : "_";
         }
 
     }

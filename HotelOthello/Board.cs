@@ -15,6 +15,8 @@ namespace HotelOthello
         public Board()
         {
             tiles = new Tile[8, 8];
+            tiles[3, 4].Black = tiles[4, 3].Black = true;
+            tiles[3, 3].White = tiles[4, 4].White = true;
         }
 
         public override string ToString()
