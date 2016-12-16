@@ -14,9 +14,9 @@ namespace HotelOthelloTester
         {
             Board board = new Board();
             Console.WriteLine(board.ToString());
-            board.Tiles[2, 3].Black = true;
+            board.Tiles[2, 3].W();
             Console.WriteLine(board.ToString());
-            board.Tiles[2, 3].White = true;
+            board.Tiles[2, 3].B();
             Console.WriteLine(board.ToString());
             Console.ReadKey();  
         }

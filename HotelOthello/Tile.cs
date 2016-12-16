@@ -3,14 +3,13 @@
     public struct Tile
     {
         private bool white;
+        private bool black;
 
         public bool White
         {
             get { return white; }
             set { white = value; black = !value; }
         }
-
-        private bool black;
 
         public bool Black
         {
