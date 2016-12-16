@@ -2,9 +2,9 @@
 {
     internal class Board
     {
-        private int[,] tiles;
+        private Tile[,] tiles;
 
-        public int[,] Tiles
+        public Tile[,] Tiles
         {
             get { return tiles; }
             set { tiles = value; }
