@@ -5,6 +5,7 @@ namespace HotelOthello
     public class Board
     {
         private Tile[,] tiles;
+        public enum Pawn { WHITE, BLACK};
 
         public Tile[,] Tiles
         {
@@ -35,5 +36,20 @@ namespace HotelOthello
             return str.ToString();
         }
 
+        public bool IsPlayable(int x, int y, Pawn player)
+        {
+
+            if (tiles[x,y].IsTaken)
+                return false;
+
+            // TODO regarder si les conditions fonctionne pour joué là
+
+            return true;
+        }
+
+        public void Play(int x, int y, Pawn player)
+        {
+            // TODO changer de face les pions encadré
+        }
     }
 }
