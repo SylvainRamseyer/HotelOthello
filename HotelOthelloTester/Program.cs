@@ -13,12 +13,12 @@ namespace HotelOthelloTester
         static void Main(string[] args)
         {
             Board board = new Board();
-            Console.WriteLine(board);
-            board.Tiles[2, 3].W();
-            Console.WriteLine(board);
-            board.Tiles[2, 3].B();
-            Console.WriteLine(board);
-            Console.ReadKey();  
+            //Console.WriteLine(board);
+            //board.Tiles[2, 3].W();
+            //Console.WriteLine(board);
+            //board.Tiles[2, 3].B();
+            //Console.WriteLine(board);
+            //Console.ReadKey();  
         }
     }
 }
