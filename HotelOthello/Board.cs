@@ -37,6 +37,7 @@ namespace HotelOthello
             tiles[3, 3] = tiles[4, 4] = 0; // 0 : white
 
             play();
+            Console.ReadKey();
         }
 
         private string play()
@@ -190,6 +191,8 @@ namespace HotelOthello
                 for (int x = 0; x < 8; x++)
                 {
                     string tile = tiles[x, y] == -1 ? "_" : (tiles[x,y] == 0 ? "w": "b");
+                    if (possibleMoves.ContainsKey(tupleToString(x, y)))
+                        tile = ".";
                     str.Append($"{tile} ");
                 }
                 str.Append("\n");
