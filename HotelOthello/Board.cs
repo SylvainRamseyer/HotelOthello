@@ -164,6 +164,62 @@ namespace HotelOthello
 
             // TODO regarder si les conditions fonctionne pour joué là
 
+
+            int colorToCheck = isWhite ? 0 : 1;
+            List<Tuple<int, int>> voisins = new List<Tuple<int, int>>();
+
+
+
+            for (int i = column-1; i <= column + 1; i++)
+            {
+                for (int j = line-1; j <= line+1; j++)
+                {
+                    try
+                    {
+                        if (Tiles[i, j] == colorToCheck)
+                            voisins.Add(new Tuple<int, int>(i, j));
+                    }
+                    catch (Exception)
+                    {
+                        // si la case n'existe pas on ne fait rien
+                    }
+                }
+            }
+
+            if (voisins.Count == 0)
+                return false;
+
+            List<Tuple<int, int>> catchedTiles = new List<Tuple<int, int>>();
+
+
+
+            foreach (Tuple<int, int> voisin in voisins)
+            {
+                int dx = voisin.Item1 - column;
+                int dy = voisin.Item2 - line;
+                int x = voisin.Item1;
+                int y = voisin.Item2;
+                List<Tuple<int, int>> temp = new List<Tuple<int, int>>();
+                try
+                {
+                    while (tiles[x, y] == colorToCheck)
+                    {
+                        temp.Add(new Tuple<int, int>(x, y));
+                        x = x + dx;
+                        y = y + dy;
+                    }
+
+                    if (tiles[x, y] == 1 - colorToCheck)
+                        catchedTiles.AddRange(temp);
+                }
+                catch (Exception)
+                {
+                    // si hors de la grille de jeux --> n'est pas valide
+                }             
+            }
+            if (catchedTiles.Count == 0)
+                return false;
+
             return true;
         }
 
