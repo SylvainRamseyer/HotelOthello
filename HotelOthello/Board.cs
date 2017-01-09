@@ -117,15 +117,6 @@ namespace HotelOthello
             return moves;
         }
 
-        //// provisoire : affecte le player à la tuile en fonction du paramètre tileCoords représentant la tuile sous forme de string "yx"
-        //private void setTile(string tileCoords, string player)
-        //{
-        //    char[] ij = tileCoords.ToCharArray();
-        //    int i = ij[0] - '0';
-        //    int j = ij[1] - '0';
-        //    tiles[i, j].set(player);
-        //}
-
         public override string ToString()
         {
             StringBuilder str = new StringBuilder();
