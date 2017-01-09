@@ -75,9 +75,6 @@ namespace HotelOthello
                     makeMove(input);
                 }
 
-                // on change de tour
-                currentPlayer = 1 - currentPlayer;
-
                 Console.WriteLine("**************************************************");
 
             } while (!gameover);
@@ -94,7 +91,7 @@ namespace HotelOthello
             int i = ij[0] - '0';
             int j = ij[1] - '0';
             //tiles[i, j] = currentPlayer;
-            bool isWhite = currentPlayer == 1 ? true : false;
+            bool isWhite = currentPlayer == 0 ? true : false;
             playMove(i, j, isWhite);
         }
 
@@ -156,7 +153,7 @@ namespace HotelOthello
             // TODO regarder si les conditions fonctionne pour joué là
 
 
-            int colorToCheck = isWhite ? 0 : 1;
+            int ennemi = isWhite ? 1 : 0;
             List<Tuple<int, int>> voisins = new List<Tuple<int, int>>();
 
 
@@ -167,7 +164,7 @@ namespace HotelOthello
                 {
                     try
                     {
-                        if (Tiles[i, j] == colorToCheck)
+                        if (Tiles[i, j] == ennemi)
                             voisins.Add(new Tuple<int, int>(i, j));
                     }
                     catch (Exception)
@@ -181,9 +178,7 @@ namespace HotelOthello
                 return false;
 
             List<Tuple<int, int>> catchedTiles = new List<Tuple<int, int>>();
-
-
-
+            
             foreach (Tuple<int, int> voisin in voisins)
             {
                 int dx = voisin.Item1 - column;
@@ -193,14 +188,14 @@ namespace HotelOthello
                 List<Tuple<int, int>> temp = new List<Tuple<int, int>>();
                 try
                 {
-                    while (tiles[x, y] == colorToCheck)
+                    while (tiles[x, y] == ennemi)
                     {
                         temp.Add(new Tuple<int, int>(x, y));
                         x = x + dx;
                         y = y + dy;
                     }
 
-                    if (tiles[x, y] == 1 - colorToCheck)
+                    if (tiles[x, y] == 1 - ennemi)
                         catchedTiles.AddRange(temp);
                 }
                 catch (Exception)
@@ -227,6 +222,10 @@ namespace HotelOthello
             if(isPlayable(column, line, isWhite))
             {
                 tiles[column, line] = isWhite ? 0 : 1;
+
+                // on change de tour
+                currentPlayer = 1 - currentPlayer;
+
                 return true;
             }
             Console.WriteLine($"can't make the move : {column}:{line}");
