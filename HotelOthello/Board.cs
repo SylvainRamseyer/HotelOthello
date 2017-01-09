@@ -9,6 +9,7 @@ namespace HotelOthello
     {
         private int[,] tiles;
         private int currentPlayer = 1; // black
+        private Dictionary<String,List<Tuple<int, int>>> possibleMoves;
         public enum Pawn { WHITE, BLACK};
 
         public int[,] Tiles
@@ -21,7 +22,8 @@ namespace HotelOthello
         {
             // intialisation
             tiles = new int[8, 8];
-            
+            possibleMoves = new Dictionary<String, List<Tuple<int, int>>>();
+
             // if wee need tiles to know their positions
             for (int i = 0; i < 8; i++)
             {
@@ -46,7 +48,8 @@ namespace HotelOthello
             {
                 string color = currentPlayer == 1 ? "black" : "white";
                 Console.WriteLine($"{color} to play");
-                HashSet<string> possibleMoves = getPossibleMoves();
+                possibleMoves.Clear();
+                computePossibleMoves();
 
                 // le joueur n'a pas de possibilité, il passe son tour
                 if (possibleMoves.Count == 0)
@@ -66,7 +69,7 @@ namespace HotelOthello
                     do
                     {
                         input = Console.ReadLine();
-                        if (!possibleMoves.Contains(input))
+                        if (!possibleMoves.ContainsKey(input))
                             Console.WriteLine($"{input} is not a legal move, choose something else");
                         else legalMove = true;
                     } while (!legalMove);
@@ -97,70 +100,36 @@ namespace HotelOthello
 
         // il faudrait que cette méthode retourne un dictionnaire avec par exemple
         // clés:tuiles possibles et valeurs:tuiles capturées par ce coup
-        private HashSet<string> getPossibleMoves()
+        private void computePossibleMoves()
         {
-            HashSet<string> moves = new HashSet<string>();
 
             // adds all available tiles
-            for (int i = 0; i < 8; i++)
+            for (int column = 0; column < 8; column++)
             {
-                for (int j = 0; j < 8; j++)
+                for (int line = 0; line < 8; line++)
                 {
-                    if (Tiles[i, j] == -1)
-                        moves.Add($"{i}{j}");
+                    computeMove(column, line);
                 }
             }
 
-            return moves;
         }
 
-        public override string ToString()
-        {
-            StringBuilder str = new StringBuilder();
-            str.Append("  A B C D E F G H\n");
-            for (int y = 0; y < 8; y++)
-            {
-                str.Append($"{y+1} ");
-                for (int x = 0; x < 8; x++)
-                {
-                    string tile = tiles[x, y] == -1 ? "_" : (tiles[x,y] == 0 ? "w": "b");
-                    str.Append($"{tile} ");
-                }
-                str.Append("\n");
-            }
-            return str.ToString();
-        }
-
-
-        /* 
-         * 
-         *  IPlayble implementation
-         *
-         */
-
-        /// <summary>
-        /// Returns true if the move is valid for specified color
-        /// </summary>
-        /// <param name="column">value between 0 and 7</param>
-        /// <param name="line">value between 0 and 7</param>
-        /// <param name="isWhite"></param>
-        /// <returns></returns>
-        public bool isPlayable(int column, int line, bool isWhite)
+        private void computeMove(int column, int line)
         {
             if (tiles[column, line] != -1)
-                return false;
+                return;
 
             // TODO regarder si les conditions fonctionne pour joué là
 
 
-            int ennemi = isWhite ? 1 : 0;
+            int ennemi = 1-currentPlayer;
             List<Tuple<int, int>> voisins = new List<Tuple<int, int>>();
 
 
 
-            for (int i = column-1; i <= column + 1; i++)
+            for (int i = column - 1; i <= column + 1; i++)
             {
-                for (int j = line-1; j <= line+1; j++)
+                for (int j = line - 1; j <= line + 1; j++)
                 {
                     try
                     {
@@ -175,10 +144,10 @@ namespace HotelOthello
             }
 
             if (voisins.Count == 0)
-                return false;
+                return;
 
             List<Tuple<int, int>> catchedTiles = new List<Tuple<int, int>>();
-            
+
             foreach (Tuple<int, int> voisin in voisins)
             {
                 int dx = voisin.Item1 - column;
@@ -195,18 +164,75 @@ namespace HotelOthello
                         y = y + dy;
                     }
 
-                    if (tiles[x, y] == 1 - ennemi)
+                    if (tiles[x, y] == currentPlayer)
                         catchedTiles.AddRange(temp);
                 }
                 catch (Exception)
                 {
                     // si hors de la grille de jeux --> n'est pas valide
-                }             
+                }
             }
             if (catchedTiles.Count == 0)
-                return false;
+                return;
 
-            return true;
+            possibleMoves.Add(tupleToString(column, line), catchedTiles);
+
+            return;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder str = new StringBuilder();
+            str.Append("  0 1 2 3 4 5 6 7\n"); 
+            for (int y = 0; y < 8; y++)
+            {
+                str.Append($"{y} ");
+                for (int x = 0; x < 8; x++)
+                {
+                    string tile = tiles[x, y] == -1 ? "_" : (tiles[x,y] == 0 ? "w": "b");
+                    str.Append($"{tile} ");
+                }
+                str.Append("\n");
+            }
+            return str.ToString();
+        }
+
+
+        private String tupleToString(Tuple<int, int> tuple)
+        {
+            return tuple.Item1.ToString() + tuple.Item2.ToString();
+        }
+
+        private String tupleToString(int x, int y)
+        {
+            return x.ToString() + y.ToString();
+        }
+
+        private Tuple<int, int> stringToTuple(string str)
+        {
+            char[] ij = str.ToCharArray();
+            int i = ij[0] - '0';
+            int j = ij[1] - '0';
+
+            return new Tuple<int, int>(i, j);
+        }
+
+        /* 
+         * 
+         *  IPlayble implementation
+         *
+         */
+
+        /// <summary>
+        /// Returns true if the move is valid for specified color
+        /// </summary>
+        /// <param name="column">value between 0 and 7</param>
+        /// <param name="line">value between 0 and 7</param>
+        /// <param name="isWhite"></param>
+        /// <returns></returns>
+        public bool isPlayable(int column, int line, bool isWhite)
+        {
+            return possibleMoves.ContainsKey(tupleToString(column, line));
         }
 
         /// <summary>
@@ -222,6 +248,11 @@ namespace HotelOthello
             if(isPlayable(column, line, isWhite))
             {
                 tiles[column, line] = isWhite ? 0 : 1;
+
+                foreach (Tuple<int, int> item in possibleMoves[tupleToString(column,line)])
+                {
+                    tiles[item.Item1, item.Item2] = currentPlayer;
+                }
 
                 // on change de tour
                 currentPlayer = 1 - currentPlayer;
