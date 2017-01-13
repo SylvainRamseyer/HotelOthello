@@ -5,13 +5,18 @@ using System.Text;
 
 namespace HotelOthello
 {
-    public class Board : IPlayable
+    public class Board
     {
         private int[,] tiles;
         private int currentPlayer = 1; // black
         private Dictionary<String,List<Tuple<int, int>>> possibleMoves;
         public enum Pawn { WHITE, BLACK};
 
+        public int CurrentPlayer
+        {
+            get { return currentPlayer; }
+        }
+        
         public int[,] Tiles
         {
             get { return tiles; }
@@ -95,8 +100,7 @@ namespace HotelOthello
             int i = ij[0] - '0';
             int j = ij[1] - '0';
             //tiles[i, j] = currentPlayer;
-            bool isWhite = currentPlayer == 0 ? true : false;
-            playMove(i, j, isWhite);
+            playMove(i, j);
         }
 
         // il faudrait que cette méthode retourne un dictionnaire avec par exemple
@@ -220,20 +224,14 @@ namespace HotelOthello
             return new Tuple<int, int>(i, j);
         }
 
-        /* 
-         * 
-         *  IPlayble implementation
-         *
-         */
 
         /// <summary>
         /// Returns true if the move is valid for specified color
         /// </summary>
         /// <param name="column">value between 0 and 7</param>
         /// <param name="line">value between 0 and 7</param>
-        /// <param name="isWhite"></param>
         /// <returns></returns>
-        public bool isPlayable(int column, int line, bool isWhite)
+        public bool isPlayable(int column, int line)
         {
             return possibleMoves.ContainsKey(tupleToString(column, line));
         }
@@ -244,13 +242,12 @@ namespace HotelOthello
         /// </summary>
         /// <param name="column">value between 0 and 7</param>
         /// <param name="line">value between 0 and 7</param>
-        /// <param name="isWhite">true for white move, false for black move</param>
         /// <returns></returns>
-        public bool playMove(int column, int line, bool isWhite)
+        public bool playMove(int column, int line)
         {
-            if(isPlayable(column, line, isWhite))
+            if(isPlayable(column, line))
             {
-                tiles[column, line] = isWhite ? 0 : 1;
+                tiles[column, line] = currentPlayer;
 
                 foreach (Tuple<int, int> item in possibleMoves[tupleToString(column,line)])
                 {
@@ -264,51 +261,7 @@ namespace HotelOthello
             }
             Console.WriteLine($"can't make the move : {column}:{line}");
             return false;
-
         }
 
-        /// <summary>
-        /// Asks the game engine next (valid) move given a game position
-        /// The board assumes following standard move notation:
-        /// 
-        ///         A B C D E F G H
-        ///       1
-        ///       2
-        ///       3
-        ///       4
-        ///       5
-        ///       6
-        ///       7
-        ///       8
-        ///       
-        ///          Column Line
-        ///  E.g.: D3, F4
-        /// </summary>
-        /// <param name="game">a 2D board with 0 for white 1 for black and -1 for empty tiles. First index for the column, second index for the line</param>
-        /// <param name="level">an integer value to set the level of the IA</param>
-        /// <param name="whiteTurn">true if white players turn, false otherwise</param>
-        /// <returns></returns>
-        public Tuple<char, int> getNextMove(int[,] game, int level, bool whiteTurn)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Returns the number of white tiles on the board
-        /// </summary>
-        /// <returns></returns>
-        public int getWhiteScore()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Returns the number of black tiles
-        /// </summary>
-        /// <returns></returns>
-        public int getBlackScore()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
