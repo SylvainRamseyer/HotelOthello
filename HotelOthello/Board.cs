@@ -225,6 +225,18 @@ namespace HotelOthello
         }
 
 
+        public bool Save(String fileName)
+        {
+            // TODO save current player and board
+            return false;
+        }
+
+        public bool load(String fileName)
+        {
+            // TODO load current player and board and dont forget to computePossibleMoves
+            return false;
+        }
+
         /// <summary>
         /// Returns true if the move is valid for specified color
         /// </summary>
@@ -261,6 +273,22 @@ namespace HotelOthello
             }
             Console.WriteLine($"can't make the move : {column}:{line}");
             return false;
+        }
+
+        public int GetScore(bool IsForWhite)
+        {
+            int cpt = 0;
+            int color = IsForWhite ? 0 : 1;
+
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    if (tiles[x, y] == color)
+                        cpt++;
+                }
+            }
+            return cpt;
         }
 
     }
