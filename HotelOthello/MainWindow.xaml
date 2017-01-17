@@ -5,8 +5,45 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HotelOthello"
         mc:Ignorable="d"
-        Title="Hotel Othello" Height="350" Width="525">
-    <Grid>
-        
+        Title="Hotel Othello" Height="350" Width="525" MinWidth="300" MinHeight="200">
+    <Grid x:Name="grid1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="col"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid 
+            x:Name="grid"
+            ShowGridLines="True"
+            MaxWidth="{Binding ActualHeight, ElementName=grid, Mode=OneWay}" 
+            >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="button" Content="Button"  Grid.Row="0" Grid.Column="0" Background="Black"/>
+            <Button x:Name="button1" Content="Button" Grid.Row="1" Grid.Column="2"/>
+            <Rectangle Grid.Column="3" Fill="#FFF4F4F5" Grid.Row="2" />
+        </Grid>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
+            <Label x:Name="label" Content="Blacks Turn" FontSize="18"/>
+            <Label x:Name="label1" Content="Whites : 2"/>
+            <Label x:Name="label2" Content="Blacks : 2"/>
+        </StackPanel>
     </Grid>
 </Window>

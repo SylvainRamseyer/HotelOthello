@@ -13,6 +13,6 @@ namespace HotelOthello
     /// </summary>
     public partial class App : Application
     {
-        Board board = new Board();
+        //Board board = new Board();
     }
 }

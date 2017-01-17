@@ -124,9 +124,6 @@ namespace HotelOthello
             if (tiles[column, line] != -1)
                 return;
 
-            // TODO regarder si les conditions fonctionne pour joué là
-
-
             int ennemi = 1-currentPlayer;
             List<Tuple<int, int>> voisins = new List<Tuple<int, int>>();
 
