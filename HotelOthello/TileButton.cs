@@ -10,8 +10,9 @@ namespace HotelOthello
     {
         int owner,x,y;
         MainWindow game;
+        bool isPlayable;
 
-        public static SolidColorBrush[] BRUSHES = { Brushes.Gray, Brushes.White, Brushes.Black };
+        public static SolidColorBrush[] BRUSHES = { Brushes.LightGray, Brushes.White, Brushes.Black };
 
         public int Owner
         {
@@ -21,6 +22,18 @@ namespace HotelOthello
                     B();
                 else if (value == 0)
                     W();
+            }
+        }
+
+
+        public bool IsPlayable
+        {
+            set {
+                isPlayable = value;
+                if (isPlayable)
+                    Background = Brushes.Pink;
+                else
+                    Background = BRUSHES[owner+1];
             }
         }
 
@@ -53,7 +66,8 @@ namespace HotelOthello
         
         protected override void OnClick()
         {
-            game.play(x,y);
+            if(owner == -1) 
+                game.play(x,y);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace HotelOthello
     public partial class MainWindow : Window
     {
         TileButton[,] tiles = new TileButton[8, 8];
-        int currentPlayer = 1;
+        OthelloGame game;
 
         public MainWindow()
         {
@@ -37,16 +37,31 @@ namespace HotelOthello
                 }
             }
 
-            tiles[3, 4].B(); tiles[4, 3].B();
-            tiles[3, 3].W(); tiles[4, 4].W();
+            game = new OthelloGame();
 
+            // display board
+            display();
+
+        }
+
+        private void display()
+        {
+            for(int y=0; y<8; y++)
+            {
+                for(int x=0; x<8; x++)
+                {
+                    tiles[x, y].Owner = game.Tiles[x, y];
+                    tiles[x, y].IsPlayable = game.IsPlayable(x, y);
+                }
+            }
+            this.label.Content = game.CurrentPlayer == 1 ? "Blacks turn" : "Whites turn";
         }
 
         internal void play(int x, int y)
         {
-            tiles[x,y].Owner = currentPlayer;
-            currentPlayer = 1 - currentPlayer;
-            this.label.Content = currentPlayer == 1 ? "Blacks turn" : "Whites turn";
+            // is this move valid ?
+            if (game.PlayMove(x, y))
+                display();
         }
     }
 }

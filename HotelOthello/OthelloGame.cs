@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HotelOthello
 {
-    public class Board
+    public class OthelloGame
     {
         private int[,] tiles;
         private int currentPlayer = 1; // black
@@ -23,7 +23,7 @@ namespace HotelOthello
             set { tiles = value; }
         }
 
-        public Board()
+        public OthelloGame()
         {
             // intialisation
             tiles = new int[8, 8];
@@ -41,8 +41,10 @@ namespace HotelOthello
             tiles[3, 4] = tiles[4, 3] = 1; // 1 : black
             tiles[3, 3] = tiles[4, 4] = 0; // 0 : white
 
-            play();
-            Console.ReadKey();
+            //play();
+            //Console.ReadKey();
+
+            computePossibleMoves();
         }
 
         private string play()
@@ -54,7 +56,7 @@ namespace HotelOthello
             {
                 string color = currentPlayer == 1 ? "black" : "white";
                 Console.WriteLine($"{color} to play");
-                possibleMoves.Clear();
+
                 computePossibleMoves();
 
                 // le joueur n'a pas de possibilité, il passe son tour
@@ -100,13 +102,14 @@ namespace HotelOthello
             int i = ij[0] - '0';
             int j = ij[1] - '0';
             //tiles[i, j] = currentPlayer;
-            playMove(i, j);
+            PlayMove(i, j);
         }
 
         // il faudrait que cette méthode retourne un dictionnaire avec par exemple
         // clés:tuiles possibles et valeurs:tuiles capturées par ce coup
         private void computePossibleMoves()
         {
+            possibleMoves.Clear();
 
             // adds all available tiles
             for (int column = 0; column < 8; column++)
@@ -240,7 +243,7 @@ namespace HotelOthello
         /// <param name="column">value between 0 and 7</param>
         /// <param name="line">value between 0 and 7</param>
         /// <returns></returns>
-        public bool isPlayable(int column, int line)
+        public bool IsPlayable(int column, int line)
         {
             return possibleMoves.ContainsKey(tupleToString(column, line));
         }
@@ -252,9 +255,9 @@ namespace HotelOthello
         /// <param name="column">value between 0 and 7</param>
         /// <param name="line">value between 0 and 7</param>
         /// <returns></returns>
-        public bool playMove(int column, int line)
+        public bool PlayMove(int column, int line)
         {
-            if(isPlayable(column, line))
+            if(IsPlayable(column, line))
             {
                 tiles[column, line] = currentPlayer;
 
@@ -265,6 +268,7 @@ namespace HotelOthello
 
                 // on change de tour
                 currentPlayer = 1 - currentPlayer;
+                computePossibleMoves();
 
                 return true;
             }
