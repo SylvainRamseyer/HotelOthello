@@ -33,7 +33,9 @@ namespace HotelOthello
             {
                 return CurrentPlayer == 1 ? "Black" : "White";
             }
-        }        
+        }
+
+        private int[] scores = { 2, 2 };
 
         public OthelloGame()
         {
@@ -187,11 +189,14 @@ namespace HotelOthello
             {
                 // pose une pièce sur la case jouée
                 tiles[column, line] = currentPlayer;
+                scores[currentPlayer]++;
 
                 // retourne les cases capturées par ce mouvement
                 foreach (Tuple<int, int> item in possibleMoves[tupleToString(column,line)])
                 {
                     tiles[item.Item1, item.Item2] = currentPlayer;
+                    scores[currentPlayer]++;
+                    scores[1-currentPlayer]--;
                 }
 
                 ChangePlayer();
@@ -212,9 +217,11 @@ namespace HotelOthello
 
         public int GetScore(bool IsForWhite)
         {
+            return scores[IsForWhite ? 0 : 1];
+            /*
             int cpt = 0;
             int color = IsForWhite ? 0 : 1;
-
+            
             for (int y = 0; y < SIZE; y++)
             {
                 for (int x = 0; x < SIZE; x++)
@@ -224,6 +231,7 @@ namespace HotelOthello
                 }
             }
             return cpt;
+            */
         }
         
         public override string ToString()

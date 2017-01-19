@@ -55,7 +55,9 @@ namespace HotelOthello
                     tiles[x, y].Owner = game.Tiles[x, y];
                 }
             }
-            this.label.Content = $"{game.PlayerColor}s turn";
+            lblCurrentPlayer.Content = $"{game.PlayerColor}s turn";
+            lblBlacksScore.Content = $"Blacks : {game.GetScore(false)}";
+            lblWhitesScore.Content = $"Whites : {game.GetScore(true)}";
         }
 
         internal void play(int x, int y)
@@ -76,8 +78,14 @@ namespace HotelOthello
                     // si lui non plus n'a pas de possibilités, c'est la fin du jeu
                     if (!game.CanMove)
                     {
+                        string winner = "Ex-aequo";
+                        if (game.GetScore(true) > game.GetScore(false))
+                            winner = "White win !";
+                        else if (game.GetScore(true) < game.GetScore(false))
+                            winner = "Black win !";
+                        
                         MessageBoxResult result = MessageBox.Show(
-                            "Would you like to play again ?", "GAME OVER",
+                            $"{winner}\nWould you like to play again ?", "GAME OVER",
                             MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (result == MessageBoxResult.Yes)
@@ -102,7 +110,6 @@ namespace HotelOthello
 
         private void btn_pass_Click(object sender, RoutedEventArgs e)
         {
-
             btn_pass.Opacity = 0;
             display();
         }
