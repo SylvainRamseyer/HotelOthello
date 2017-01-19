@@ -67,14 +67,14 @@ namespace HotelOthello
                 display();
 
                 // si il n'y a plus de mouvement possibles pour le prochain joueur
-                if (game.PossibleMoves.Count == 0)
+                if (! game.CanMove)
                 {
                     // change de joueur
                     game.ChangePlayer();
                     // calcul ses possibilités
                     game.ComputePossibleMoves();
                     // si lui non plus n'a pas de possibilités, c'est la fin du jeu
-                    if (game.PossibleMoves.Count == 0)
+                    if (!game.CanMove)
                     {
                         MessageBoxResult result = MessageBox.Show(
                             "Would you like to play again ?", "GAME OVER",

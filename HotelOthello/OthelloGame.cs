@@ -1,5 +1,4 @@
-﻿using OthelloConsole;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,39 +8,39 @@ namespace HotelOthello
     {
         public const int SIZE = 8;
 
+        // tableau 2d d'entiers représentant le plateau de jeu
+        // -1 : case libre
+        //  0 : noir
+        //  1 : blanc
         private int[,] tiles;
-        private int currentPlayer = 1; // black
-        private Dictionary<String,List<Tuple<int, int>>> possibleMoves;
-
-        bool noMovement = false;
-        bool gameover = false;
-
-        public bool GameOver { get { return gameover; } }
-        public bool NoMovement { get { return noMovement; } }
-        public Dictionary<String, List<Tuple<int, int>>> PossibleMoves { get { return possibleMoves; } }
-
-        public int CurrentPlayer{ get { return currentPlayer; } }
-        public string PlayerColor
-        {
-            get
-            {
-                return CurrentPlayer == 1 ? "Black" : "White";
-            }
-        }
-        
         public int[,] Tiles
         {
             get { return tiles; }
             set { tiles = value; }
         }
 
+        // clé: string représentant un mouvement, exemple : "07"
+        // valeur: liste des tuiles capturées si ce mouvement est efefctuées
+        private Dictionary<String,List<Tuple<int, int>>> possibleMoves;
+        public bool CanMove { get { return possibleMoves.Count > 0; } }
+
+        private int currentPlayer = 1; // 1=black
+        public int CurrentPlayer{ get { return currentPlayer; } }
+        // raccourci pour obtenir la couleur qui doit jouer
+        public string PlayerColor
+        {
+            get
+            {
+                return CurrentPlayer == 1 ? "Black" : "White";
+            }
+        }        
+
         public OthelloGame()
         {
             // intialisation
             tiles = new int[SIZE, SIZE];
             possibleMoves = new Dictionary<String, List<Tuple<int, int>>>();
-
-            // if wee need tiles to know their positions
+            
             for (int i = 0; i < SIZE; i++)
             {
                 for (int j = 0; j < SIZE; j++)
@@ -55,69 +54,7 @@ namespace HotelOthello
             
             ComputePossibleMoves();
         }
-
-        private string play()
-        {
-            bool gameover = false;
-            bool noMovement = false;
-            string input;
-            do
-            {
-                string color = currentPlayer == 1 ? "black" : "white";
-                Console.WriteLine($"{color} to play");
-
-                ComputePossibleMoves();
-
-                // le joueur n'a pas de possibilité, il passe son tour
-                if (possibleMoves.Count == 0)
-                {
-                    Console.WriteLine("you can't move");
-                    // si on passe deux fois de suite ici, ça signifie qu'aucun joueur ne peut jouer, c'est fini
-                    if (noMovement)
-                        gameover = true;
-                    else
-                        noMovement = true;
-                }
-                else
-                {
-                    noMovement = false;
-
-                    Console.WriteLine(this);
-                    Console.WriteLine("To make a move, type x and y coordinates. For example : 70 for the top right tile");
-                    bool legalMove = false;
-                    do
-                    {
-                        input = Console.ReadLine();
-                        if (!possibleMoves.ContainsKey(input))
-                            Console.WriteLine($"{input} is not a legal move, choose something else");
-                        else legalMove = true;
-                    } while (!legalMove);
-
-                    // make the move
-                    makeMove(input);
-                }
-
-                Console.WriteLine("**************************************************");
-
-            } while (!gameover);
-
-            // compter les pions pour donner un vainqueur
-            return "black";
-        }
-
-        private void makeMove(string input)
-        {
-            // en plus d'ajouter le pion, il faudra inverser les pions capturés
-            // on récupère les tuiles capturées dans getPossibleMoves
-            char[] ij = input.ToCharArray();
-            int i = ij[0] - '0';
-            int j = ij[1] - '0';
-            //tiles[i, j] = currentPlayer;
-            PlayMove(i, j);
-        }
-
-        // il faudrait que cette méthode retourne un dictionnaire avec par exemple
-        // clés:tuiles possibles et valeurs:tuiles capturées par ce coup
+        
         public void ComputePossibleMoves()
         {
             possibleMoves.Clear();
@@ -193,36 +130,17 @@ namespace HotelOthello
             return;
         }
 
-        public override string ToString()
-        {
-            StringBuilder str = new StringBuilder();
-            str.Append("  0 1 2 3 4 5 6 7\n"); 
-            for (int y = 0; y < SIZE; y++)
-            {
-                str.Append($"{y} ");
-                for (int x = 0; x < SIZE; x++)
-                {
-                    string tile = tiles[x, y] == -1 ? "_" : (tiles[x,y] == 0 ? "w": "b");
-                    if (possibleMoves.ContainsKey(tupleToString(x, y)))
-                        tile = ".";
-                    str.Append($"{tile} ");
-                }
-                str.Append("\n");
-            }
-            return str.ToString();
-        }
-
-
         private String tupleToString(Tuple<int, int> tuple)
         {
-            return tuple.Item1.ToString() + tuple.Item2.ToString();
+            return tupleToString(tuple.Item1, tuple.Item2);
         }
 
         private String tupleToString(int x, int y)
         {
-            return x.ToString() + y.ToString();
+            return $"{x}{y}";
         }
 
+        /*
         private Tuple<int, int> stringToTuple(string str)
         {
             char[] ij = str.ToCharArray();
@@ -231,7 +149,7 @@ namespace HotelOthello
 
             return new Tuple<int, int>(i, j);
         }
-
+        */
 
         public bool Save(String fileName)
         {
@@ -306,6 +224,25 @@ namespace HotelOthello
                 }
             }
             return cpt;
+        }
+        
+        public override string ToString()
+        {
+            StringBuilder str = new StringBuilder();
+            str.Append("  0 1 2 3 4 5 6 7\n");
+            for (int y = 0; y < SIZE; y++)
+            {
+                str.Append($"{y} ");
+                for (int x = 0; x < SIZE; x++)
+                {
+                    string tile = tiles[x, y] == -1 ? "_" : (tiles[x, y] == 0 ? "w" : "b");
+                    if (possibleMoves.ContainsKey(tupleToString(x, y)))
+                        tile = ".";
+                    str.Append($"{tile} ");
+                }
+                str.Append("\n");
+            }
+            return str.ToString();
         }
 
     }
