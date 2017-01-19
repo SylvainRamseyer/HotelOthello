@@ -7,14 +7,26 @@ namespace HotelOthello
 {
     public class OthelloGame
     {
+        public const int SIZE = 8;
+
         private int[,] tiles;
         private int currentPlayer = 1; // black
         private Dictionary<String,List<Tuple<int, int>>> possibleMoves;
-        public enum Pawn { WHITE, BLACK};
 
-        public int CurrentPlayer
+        bool noMovement = false;
+        bool gameover = false;
+
+        public bool GameOver { get { return gameover; } }
+        public bool NoMovement { get { return noMovement; } }
+        public Dictionary<String, List<Tuple<int, int>>> PossibleMoves { get { return possibleMoves; } }
+
+        public int CurrentPlayer{ get { return currentPlayer; } }
+        public string PlayerColor
         {
-            get { return currentPlayer; }
+            get
+            {
+                return CurrentPlayer == 1 ? "Black" : "White";
+            }
         }
         
         public int[,] Tiles
@@ -26,25 +38,22 @@ namespace HotelOthello
         public OthelloGame()
         {
             // intialisation
-            tiles = new int[8, 8];
+            tiles = new int[SIZE, SIZE];
             possibleMoves = new Dictionary<String, List<Tuple<int, int>>>();
 
             // if wee need tiles to know their positions
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < SIZE; i++)
             {
-                for (int j = 0; j < 8; j++)
+                for (int j = 0; j < SIZE; j++)
                 {
                     tiles[i, j] = -1; // -1 : empty tile
                 }
             }
-            
+
             tiles[3, 4] = tiles[4, 3] = 1; // 1 : black
             tiles[3, 3] = tiles[4, 4] = 0; // 0 : white
-
-            //play();
-            //Console.ReadKey();
-
-            computePossibleMoves();
+            
+            ComputePossibleMoves();
         }
 
         private string play()
@@ -57,15 +66,17 @@ namespace HotelOthello
                 string color = currentPlayer == 1 ? "black" : "white";
                 Console.WriteLine($"{color} to play");
 
-                computePossibleMoves();
+                ComputePossibleMoves();
 
                 // le joueur n'a pas de possibilité, il passe son tour
                 if (possibleMoves.Count == 0)
                 {
                     Console.WriteLine("you can't move");
                     // si on passe deux fois de suite ici, ça signifie qu'aucun joueur ne peut jouer, c'est fini
-                    if (noMovement) gameover = true;
-                    else noMovement = true;
+                    if (noMovement)
+                        gameover = true;
+                    else
+                        noMovement = true;
                 }
                 else
                 {
@@ -107,19 +118,18 @@ namespace HotelOthello
 
         // il faudrait que cette méthode retourne un dictionnaire avec par exemple
         // clés:tuiles possibles et valeurs:tuiles capturées par ce coup
-        private void computePossibleMoves()
+        public void ComputePossibleMoves()
         {
             possibleMoves.Clear();
 
             // adds all available tiles
-            for (int column = 0; column < 8; column++)
+            for (int column = 0; column < SIZE; column++)
             {
-                for (int line = 0; line < 8; line++)
+                for (int line = 0; line < SIZE; line++)
                 {
                     computeMove(column, line);
                 }
             }
-
         }
 
         private void computeMove(int column, int line)
@@ -129,8 +139,6 @@ namespace HotelOthello
 
             int ennemi = 1-currentPlayer;
             List<Tuple<int, int>> voisins = new List<Tuple<int, int>>();
-
-
 
             for (int i = column - 1; i <= column + 1; i++)
             {
@@ -189,10 +197,10 @@ namespace HotelOthello
         {
             StringBuilder str = new StringBuilder();
             str.Append("  0 1 2 3 4 5 6 7\n"); 
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < SIZE; y++)
             {
                 str.Append($"{y} ");
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < SIZE; x++)
                 {
                     string tile = tiles[x, y] == -1 ? "_" : (tiles[x,y] == 0 ? "w": "b");
                     if (possibleMoves.ContainsKey(tupleToString(x, y)))
@@ -259,16 +267,19 @@ namespace HotelOthello
         {
             if(IsPlayable(column, line))
             {
+                // pose une pièce sur la case jouée
                 tiles[column, line] = currentPlayer;
 
+                // retourne les cases capturées par ce mouvement
                 foreach (Tuple<int, int> item in possibleMoves[tupleToString(column,line)])
                 {
                     tiles[item.Item1, item.Item2] = currentPlayer;
                 }
 
-                // on change de tour
-                currentPlayer = 1 - currentPlayer;
-                computePossibleMoves();
+                ChangePlayer();
+
+                // calcul les coups possibles pour le prochain tour
+                ComputePossibleMoves();
 
                 return true;
             }
@@ -276,14 +287,19 @@ namespace HotelOthello
             return false;
         }
 
+        public void ChangePlayer()
+        {
+            currentPlayer = 1 - currentPlayer;
+        }
+
         public int GetScore(bool IsForWhite)
         {
             int cpt = 0;
             int color = IsForWhite ? 0 : 1;
 
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < SIZE; y++)
             {
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < SIZE; x++)
                 {
                     if (tiles[x, y] == color)
                         cpt++;

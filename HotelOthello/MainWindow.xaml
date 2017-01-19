@@ -37,13 +37,14 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="button" Content="Button"  Grid.Row="0" Grid.Column="0" Background="Black"/>
-            <Button x:Name="button1" Content="Button" Grid.Row="1" Grid.Column="2"/>
+            <Button x:Name="button1" Content="Button" Grid.Row="1" Grid.Column="2" BorderBrush="Red" BorderThickness="10"/>
             <Rectangle Grid.Column="3" Fill="#FFF4F4F5" Grid.Row="2" />
         </Grid>
         <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
             <Label x:Name="label" Content="Blacks Turn" FontSize="18"/>
             <Label x:Name="label1" Content="Whites : 2"/>
             <Label x:Name="label2" Content="Blacks : 2"/>
+            <Button x:Name="btn_pass" Content="Pass" Width="75" Click="btn_pass_Click" Opacity="0"/>
         </StackPanel>
     </Grid>
 </Window>
