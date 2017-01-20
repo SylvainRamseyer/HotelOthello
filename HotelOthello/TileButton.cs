@@ -9,7 +9,7 @@ namespace HotelOthello
     internal class TileButton : Button
     {
         int owner,x,y;
-        MainWindow game;
+        MainWindow ui;
         bool isPlayable;
 
         public static SolidColorBrush[] BRUSHES = { Brushes.LightGray, Brushes.White, Brushes.Black };
@@ -41,10 +41,9 @@ namespace HotelOthello
         {
             this.x = x;
             this.y = y;
-            this.game = parent;
+            this.ui = parent;
 
             Name = $"Button{x}{y}";
-            //IsEnabled = false;
 
             Grid.SetColumn(this, x);
             Grid.SetRow(this, y);
@@ -66,8 +65,8 @@ namespace HotelOthello
         
         protected override void OnClick()
         {
-            if(owner == -1) 
-                game.play(x,y);
+            if(isPlayable) 
+                ui.play(x,y);
         }
     }
 }
