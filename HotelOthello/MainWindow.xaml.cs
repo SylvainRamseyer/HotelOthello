@@ -49,9 +49,9 @@ namespace HotelOthello
             for(int y=0; y<8; y++)
             {
                 for(int x=0; x<8; x++)
-                {
-                    tiles[x, y].Owner = game.Tiles[x, y];
+                {                 
                     tiles[x, y].IsPlayable = game.IsPlayable(x, y);
+                    tiles[x, y].Owner = game.Tiles[x, y];
                 }
             }
             this.label.Content = game.CurrentPlayer == 1 ? "Blacks turn" : "Whites turn";
@@ -62,6 +62,12 @@ namespace HotelOthello
             // is this move valid ?
             if (game.PlayMove(x, y))
                 display();
+        }
+
+        private void buttonUndo_Click(object sender, RoutedEventArgs e)
+        {
+            game.Undo();
+            display();
         }
     }
 }

@@ -45,5 +45,6 @@
             <Label x:Name="label1" Content="Whites : 2"/>
             <Label x:Name="label2" Content="Blacks : 2"/>
         </StackPanel>
+        <Button x:Name="buttonUndo" Content="Undo" Grid.Column="1" HorizontalAlignment="Left" Margin="65,289,0,0" VerticalAlignment="Top" Width="75" Click="buttonUndo_Click" />
     </Grid>
 </Window>

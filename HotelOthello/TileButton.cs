@@ -33,7 +33,7 @@ namespace HotelOthello
                 if (isPlayable)
                     Background = Brushes.Pink;
                 else
-                    Background = BRUSHES[owner+1];
+                    Background = Brushes.LightGray;
             }
         }
 

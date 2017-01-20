@@ -8,9 +8,11 @@ namespace HotelOthello
     public class OthelloGame
     {
         private int[,] tiles;
+        private Stack<int[,]> history;
         private int currentPlayer = 1; // black
         private Dictionary<String,List<Tuple<int, int>>> possibleMoves;
         public enum Pawn { WHITE, BLACK};
+        public const int SIZE_GRID = 8;
 
         public int CurrentPlayer
         {
@@ -26,11 +28,12 @@ namespace HotelOthello
         public OthelloGame()
         {
             // intialisation
-            tiles = new int[8, 8];
+            tiles = new int[SIZE_GRID, SIZE_GRID];
+            history = new Stack<int[,]>();
             possibleMoves = new Dictionary<String, List<Tuple<int, int>>>();
 
             // if wee need tiles to know their positions
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < SIZE_GRID; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
@@ -112,9 +115,9 @@ namespace HotelOthello
             possibleMoves.Clear();
 
             // adds all available tiles
-            for (int column = 0; column < 8; column++)
+            for (int column = 0; column < SIZE_GRID; column++)
             {
-                for (int line = 0; line < 8; line++)
+                for (int line = 0; line < SIZE_GRID; line++)
                 {
                     computeMove(column, line);
                 }
@@ -189,10 +192,10 @@ namespace HotelOthello
         {
             StringBuilder str = new StringBuilder();
             str.Append("  0 1 2 3 4 5 6 7\n"); 
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < SIZE_GRID; y++)
             {
                 str.Append($"{y} ");
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < SIZE_GRID; x++)
                 {
                     string tile = tiles[x, y] == -1 ? "_" : (tiles[x,y] == 0 ? "w": "b");
                     if (possibleMoves.ContainsKey(tupleToString(x, y)))
@@ -259,6 +262,8 @@ namespace HotelOthello
         {
             if(IsPlayable(column, line))
             {
+                SaveInHistory();
+
                 tiles[column, line] = currentPlayer;
 
                 foreach (Tuple<int, int> item in possibleMoves[tupleToString(column,line)])
@@ -281,15 +286,40 @@ namespace HotelOthello
             int cpt = 0;
             int color = IsForWhite ? 0 : 1;
 
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < SIZE_GRID; y++)
             {
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < SIZE_GRID; x++)
                 {
                     if (tiles[x, y] == color)
                         cpt++;
                 }
             }
             return cpt;
+        }
+
+        public void Undo()
+        {
+            if (history.Count != 0)
+            {
+                tiles = history.Pop();
+                currentPlayer = 1 - currentPlayer;
+                computePossibleMoves();
+            }
+        }
+
+        private void SaveInHistory()
+        {
+            int[,] copyTab = new int[SIZE_GRID, SIZE_GRID];
+
+            for (int i = 0; i < SIZE_GRID; i++)
+            {
+                for (int j = 0; j < SIZE_GRID; j++)
+                {
+                    copyTab[i, j] = tiles[i, j];
+                }
+            }
+
+            history.Push(copyTab);
         }
 
     }
