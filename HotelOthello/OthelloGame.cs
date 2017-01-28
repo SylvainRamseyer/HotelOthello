@@ -59,13 +59,14 @@ namespace HotelOthello
         }
 
 
-        TimeSpan[] playersTimes = { TimeSpan.Zero, TimeSpan.Zero };
+        TimeSpan[] chronos = { TimeSpan.Zero, TimeSpan.Zero };
         DateTime[] referenceTimes = { DateTime.Now, DateTime.Now };
 
-        string whitesTimeString = "";
-        string blacksTimeString = "";
+        // ce timer ne sert qu'à actualiser l'affihcage
         private Timer timer;
 
+        string whitesTimeString = "00:00.000";
+        string blacksTimeString = "";
         public string WhitesTimeString
         {
             get { return whitesTimeString; }
@@ -106,22 +107,15 @@ namespace HotelOthello
             timer = new Timer(25); // 40 rafraichissements par secondes
             timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             timer.Start();
-            WhitesTimeString = timeSpanToString(playersTimes[0]);
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
-            computeTime(currentPlayer);
+            TimeSpan t = chronos[currentPlayer] + (DateTime.Now - referenceTimes[currentPlayer]);
             if (currentPlayer == 0)
-                WhitesTimeString = timeSpanToString(playersTimes[0]);
+                WhitesTimeString = timeSpanToString(t);
             else if (currentPlayer == 1)
-                BlacksTimeString = timeSpanToString(playersTimes[1]);
-        }
-
-        private void computeTime(int player)
-        {
-            playersTimes[player] += DateTime.Now - referenceTimes[player];
-            referenceTimes[player] = DateTime.Now;
+                BlacksTimeString = timeSpanToString(t);
         }
 
         private static string timeSpanToString(TimeSpan t)
@@ -132,6 +126,7 @@ namespace HotelOthello
         public void StopTimer()
         {
             timer.Stop();
+            chronos[currentPlayer] += (DateTime.Now - referenceTimes[currentPlayer]);
         }
 
         public void RestartTimer()
@@ -232,8 +227,8 @@ namespace HotelOthello
             SavebleBoard board = new SavebleBoard();
             board.CurrentPlayer = this.CurrentPlayer;
             board.Tiles = this.tiles;
-            board.BlackTimer = this.playersTimes[1];
-            board.WhiteTimer = this.playersTimes[0];
+            board.BlackTimer = this.chronos[1];
+            board.WhiteTimer = this.chronos[0];
 
             string json = JsonConvert.SerializeObject(board);
             System.IO.File.WriteAllText(fileName, json);
@@ -249,8 +244,8 @@ namespace HotelOthello
 
                 Console.WriteLine(board.CurrentPlayer);
                 this.tiles = board.Tiles;
-                this.playersTimes[1] = board.BlackTimer;
-                this.playersTimes[0] = board.WhiteTimer;
+                this.chronos[1] = board.BlackTimer;
+                this.chronos[0] = board.WhiteTimer;
                 this.currentPlayer = board.CurrentPlayer;
                 this.ComputePossibleMoves();
                 this.updateScore();
@@ -317,6 +312,7 @@ namespace HotelOthello
 
         public void ChangePlayer()
         {
+            chronos[currentPlayer] += DateTime.Now - referenceTimes[currentPlayer];
             currentPlayer = 1 - currentPlayer;
             referenceTimes[currentPlayer] = DateTime.Now;
         }
@@ -369,7 +365,7 @@ namespace HotelOthello
             if (history.Count != 0)
             {
                 tiles = history.Pop();
-                currentPlayer = 1 - currentPlayer;
+                ChangePlayer();
                 updateScore();
                 ComputePossibleMoves();
             }
@@ -401,11 +397,11 @@ namespace HotelOthello
             {
                 return "Black wins !";
             }
-            else if (playersTimes[0] < playersTimes[1])
+            else if (chronos[0] < chronos[1])
             {
                 return "Ex-aequo, but White has a better time";
             }
-            else if (playersTimes[0] > playersTimes[1])
+            else if (chronos[0] > chronos[1])
             {
                 return "Ex-aequo, but Black has a better time";
             }

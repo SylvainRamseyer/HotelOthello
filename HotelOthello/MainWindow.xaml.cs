@@ -78,10 +78,6 @@ namespace HotelOthello
                             DataContext = game;
                             display();
                         }
-                        else
-                        {
-                            Application.Current.Shutdown();
-                        }
                     }
                     else
                     {
