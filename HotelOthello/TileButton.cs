@@ -1,7 +1,4 @@
-﻿
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace HotelOthello
@@ -11,8 +8,6 @@ namespace HotelOthello
         int owner,x,y;
         MainWindow ui;
         bool isPlayable;
-
-        public static SolidColorBrush[] BRUSHES = { Brushes.LightGray, Brushes.White, Brushes.Black };
 
         public int Owner
         {
@@ -31,9 +26,9 @@ namespace HotelOthello
             set {
                 isPlayable = value;
                 if (isPlayable)
-                    Background = Brushes.Pink;
+                    Background = new SolidColorBrush(Color.FromArgb(40, 0, 255, 30));
                 else
-                    Background = Brushes.LightGray;
+                    Background = Brushes.Transparent;
             }
         }
 
@@ -47,8 +42,6 @@ namespace HotelOthello
 
             Grid.SetColumn(this, x);
             Grid.SetRow(this, y);
-
-            //Margin = new Thickness(5);
 
             owner = -1;
         }

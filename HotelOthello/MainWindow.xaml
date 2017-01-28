@@ -7,65 +7,85 @@
         mc:Ignorable="d"
         Title="Hotel Othello" MinWidth="800" MinHeight="600"
         >
-    <Grid x:Name="gridMain">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid
-            x:Name="gridContainer"
-            
-            >
-            <Grid 
-                x:Name="gridOthello"
-                MaxHeight="{Binding ActualWidth, ElementName=gridContainer, Mode=OneWay}" 
-                MaxWidth="{Binding ActualHeight, ElementName=gridOthello, Mode=OneWay}" 
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <LinearGradientBrush.RelativeTransform>
+                <TransformGroup>
+                    <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                    <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                    <RotateTransform Angle="-146.203" CenterY="0.5" CenterX="0.5"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </LinearGradientBrush.RelativeTransform>
+            <GradientStop Color="#FFABD6E6"/>
+            <GradientStop Color="#FFE8F9E5" Offset="0.997"/>
+            <GradientStop Color="#FFD3EED3" Offset="0.667"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Background="#7FFFFFFF" Padding="5,5,0,5">
+            <MenuItem x:Name="menuSave" Header="_Save" Click="menuSave_Click"/>
+            <MenuItem x:Name="menuLoad" Header="_Open" Click="menuLoad_Click"/>
+            <MenuItem x:Name="menuUndo" Header="_Undo" Click="menuUndo_Click"/>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="gridContainer" Margin="10">
+                <Grid 
+                    x:Name="gridOthello"
+                    MaxHeight="{Binding ActualWidth, ElementName=gridContainer}" 
+                    MaxWidth="{Binding ActualHeight, ElementName=gridOthello}" 
                 >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                </Grid>
             </Grid>
+            <StackPanel Grid.Column="2" Margin="10">
+                <Label Content="Welcome to" FontStyle="Italic" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,-15"/>
+                <Label Content="Hotel Othello" FontSize="32" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Broadway"/>
+                <Rectangle Fill="Black" Height="2" StrokeThickness="2" Margin="0,10"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Blacks" FontSize="24" HorizontalAlignment="Center"/>
+                    <Label Content="Whites" Grid.Column="1" FontSize="24" HorizontalAlignment="Center"/>
+                    <Label Content="{Binding BlacksScore}" Grid.Row="1" Grid.Column="0" FontSize="48" FontWeight="Bold" HorizontalAlignment="Center" />
+                    <Label Content="{Binding WhitesScore}" Grid.Row="1" Grid.Column="1" FontSize="48" FontWeight="Bold" HorizontalAlignment="Center" />
+                    <Label Content="{Binding BlacksTimeString}" Grid.Row="2" Grid.Column="0" FontSize="22" HorizontalAlignment="Center" FontFamily="Consolas" />
+                    <Label Content="{Binding WhitesTimeString}" Grid.Row="2" Grid.Column="1" FontSize="22" HorizontalAlignment="Center" FontFamily="Consolas" />
+                </Grid>
+                <Button x:Name="btn_pass" Click="btn_pass_Click" Content="Pass" Background="#33FFFFFF" Margin="0,20,0,0" Visibility="Hidden"/>
+                <Label Content="Who's playing ?" HorizontalAlignment="Center" FontStyle="Italic"/>
+                <Ellipse x:Name="circle" Width="60" Height="60" VerticalAlignment="Top" HorizontalAlignment="Center" Fill="Black" StrokeThickness="2"/>
+            </StackPanel>
         </Grid>
-        <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
-            <Label x:Name="lblCurrentPlayer" Content="Blacks Turn" FontSize="18"/>
-            <Grid ShowGridLines="True">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Label Content="Blacks"/>
-                <Label Content="Whites" Grid.Column="1"/>
-                <Label Content="{Binding BlacksScore}" Grid.Row="1" Grid.Column="0" FontSize="22" />
-                <Label Content="{Binding WhitesScore}" Grid.Row="1" Grid.Column="1" FontSize="22" />
-                <Label Content="{Binding BlacksTimeString}" Grid.Row="2" Grid.Column="0" />
-                <Label Content="{Binding WhitesTimeString}" Grid.Row="2" Grid.Column="1" />
-            </Grid>
-            <Button x:Name="btn_pass" Content="Pass" Click="btn_pass_Click" Opacity="0"/>
-            <Button x:Name="buttonUndo" Content="Undo" Click="buttonUndo_Click" />
-            <Button x:Name="ButtonSave" Content="Save" Click="ButtonSave_Click"/>
-            <Button x:Name="ButtonLoad" Content="Load" Click="ButtonLoad_Click"/>
-        </StackPanel>
-    </Grid>
+    </DockPanel>
 </Window>

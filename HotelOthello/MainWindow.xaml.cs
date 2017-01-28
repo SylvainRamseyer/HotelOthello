@@ -1,19 +1,6 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace HotelOthello
 {
@@ -57,7 +44,7 @@ namespace HotelOthello
                     tiles[x, y].Owner = game.Tiles[x, y];
                 }
             }
-            lblCurrentPlayer.Content = $"{game.PlayerColor}s turn";;
+            circle.Fill = (SolidColorBrush)new BrushConverter().ConvertFromString(game.PlayerColor);
         }
 
         internal void play(int x, int y)
@@ -78,11 +65,8 @@ namespace HotelOthello
                     // si lui non plus n'a pas de possibilités, c'est la fin du jeu
                     if (!game.CanMove)
                     {
-                        string winner = "Ex-aequo";
-                        if (game.GetScore(true) > game.GetScore(false))
-                            winner = "White win !";
-                        else if (game.GetScore(true) < game.GetScore(false))
-                            winner = "Black win !";
+                        game.StopTimer();
+                        string winner = game.GetWinnerString();
                         
                         MessageBoxResult result = MessageBox.Show(
                             $"{winner}\nWould you like to play again ?", "GAME OVER",
@@ -91,6 +75,7 @@ namespace HotelOthello
                         if (result == MessageBoxResult.Yes)
                         {
                             game = new OthelloGame();
+                            DataContext = game;
                             display();
                         }
                         else
@@ -102,7 +87,7 @@ namespace HotelOthello
                     {
                         // si l'autre joueur peut jouer, affiche un bouton pour passer au tour suivant
                         // todo : un autre message box ?
-                        btn_pass.Opacity = 100;
+                        btn_pass.Visibility = Visibility.Visible;
                     }
                 }
             }
@@ -110,17 +95,11 @@ namespace HotelOthello
 
         private void btn_pass_Click(object sender, RoutedEventArgs e)
         {
-            btn_pass.Opacity = 0;
+            btn_pass.Visibility = Visibility.Hidden;
             display();
         }
 
-        private void buttonUndo_Click(object sender, RoutedEventArgs e)
-        {
-            game.Undo();
-            display();
-        }
-
-        private void ButtonSave_Click(object sender, RoutedEventArgs e)
+        private void menuSave_Click(object sender, RoutedEventArgs e)
         {
             game.StopTimer();
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -133,13 +112,13 @@ namespace HotelOthello
 
             // If the file name is not an empty string open it for saving.
             if (saveFileDialog.FileName != "")
-            { 
+            {
                 game.Save(saveFileDialog.FileName);
             }
             game.RestartTimer();
         }
 
-        private void ButtonLoad_Click(object sender, RoutedEventArgs e)
+        private void menuLoad_Click(object sender, RoutedEventArgs e)
         {
             game.StopTimer();
             // Create an instance of the open file dialog box.
@@ -157,6 +136,12 @@ namespace HotelOthello
                 display();
             }
             game.RestartTimer();
+        }
+
+        private void menuUndo_Click(object sender, RoutedEventArgs e)
+        {
+            game.Undo();
+            display();
         }
     }
 }

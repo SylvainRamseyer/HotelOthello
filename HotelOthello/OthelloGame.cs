@@ -106,7 +106,7 @@ namespace HotelOthello
             timer = new Timer(25); // 40 rafraichissements par secondes
             timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             timer.Start();
-
+            WhitesTimeString = timeSpanToString(playersTimes[0]);
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
@@ -390,5 +390,29 @@ namespace HotelOthello
             history.Push(copyTab);
         }
 
+
+        public string GetWinnerString()
+        {
+            if(scores[0] > scores[1])
+            {
+                return "White wins !";
+            }
+            else if(scores[0] < scores[1])
+            {
+                return "Black wins !";
+            }
+            else if (playersTimes[0] < playersTimes[1])
+            {
+                return "Ex-aequo, but White has a better time";
+            }
+            else if (playersTimes[0] > playersTimes[1])
+            {
+                return "Ex-aequo, but Black has a better time";
+            }
+            else
+            {
+                return "Completely Ex-aequo... that's amazing !";
+            }
+        }
     }
 }
