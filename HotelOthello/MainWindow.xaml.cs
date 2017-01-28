@@ -34,7 +34,7 @@ namespace HotelOthello
                 for (int x = 0; x < OthelloGame.SIZE_GRID; x++)
                 {
                     TileButton newBtn = new TileButton(x, y, this);
-                    this.grid.Children.Add(newBtn);
+                    gridOthello.Children.Add(newBtn);
                     tiles[x, y] = newBtn;
                 }
             }
