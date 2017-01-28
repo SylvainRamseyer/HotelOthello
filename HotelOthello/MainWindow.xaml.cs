@@ -139,5 +139,15 @@ namespace HotelOthello
             game.Undo();
             display();
         }
+
+        private void menuPause_Click(object sender, RoutedEventArgs e)
+        {
+            game.StopTimer();
+            gridOthello.Visibility = Visibility.Hidden;
+            MessageBoxResult result = MessageBox.Show(
+                "Game paused, Click OK to continue", "PAUSE");
+            gridOthello.Visibility = Visibility.Visible;
+            game.RestartTimer();
+        }
     }
 }

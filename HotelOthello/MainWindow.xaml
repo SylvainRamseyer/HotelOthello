@@ -27,6 +27,7 @@
             <MenuItem x:Name="menuSave" Header="_Save" Click="menuSave_Click"/>
             <MenuItem x:Name="menuLoad" Header="_Open" Click="menuLoad_Click"/>
             <MenuItem x:Name="menuUndo" Header="_Undo" Click="menuUndo_Click"/>
+            <MenuItem x:Name="menuPause" Header="_Pause" Click="menuPause_Click"/>
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
