@@ -17,8 +17,8 @@ namespace HotelOthello
 
         // tableau 2d d'entiers représentant le plateau de jeu
         // -1 : case libre
-        //  0 : noir
-        //  1 : blanc
+        //  0 : blanc
+        //  1 : noir
         private int[,] tiles;
         public int[,] Tiles
         {
@@ -47,13 +47,13 @@ namespace HotelOthello
         
         public int BlacksScore
         {
-            get { return scores[0]; }
-            set { scores[0] = value; RaisePropertyChanged("BlacksScore"); }
+            get { return scores[1]; }
+            set { scores[1] = value; RaisePropertyChanged("BlacksScore"); }
         }
         public int WhitesScore
         {
-            get { return scores[1]; }
-            set { scores[1] = value; RaisePropertyChanged("WhitesScore"); }
+            get { return scores[0]; }
+            set { scores[0] = value; RaisePropertyChanged("WhitesScore"); }
         }
         
 
@@ -222,11 +222,10 @@ namespace HotelOthello
 
         private void score(int player, int delta)
         {
-            if (player == 0)
+            if (player == 1)
                 BlacksScore += delta;
-            else if (player == 1)
+            else if (player == 0)
                 WhitesScore += delta;
-
         }
 
         /// <summary>
@@ -278,19 +277,6 @@ namespace HotelOthello
             if (IsForWhite)
                 return WhitesScore;
             return BlacksScore;
-            /*
-            int cpt = 0;
-            int color = IsForWhite ? 0 : 1;
-            for (int y = 0; y < SIZE_GRID; y++)
-            {
-                for (int x = 0; x < SIZE_GRID; x++)
-                {
-                    if (tiles[x, y] == color)
-                        cpt++;
-                }
-            }
-            return cpt;
-            */
         }
 
         private void updateScore()
