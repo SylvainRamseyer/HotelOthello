@@ -57,9 +57,7 @@ namespace HotelOthello
                     tiles[x, y].Owner = game.Tiles[x, y];
                 }
             }
-            lblCurrentPlayer.Content = $"{game.PlayerColor}s turn";
-            //lblBlacksScore.Content = $"Blacks : {game.GetScore(false)}";
-            //lblWhitesScore.Content = $"Whites : {game.GetScore(true)}";
+            lblCurrentPlayer.Content = $"{game.PlayerColor}s turn";;
         }
 
         internal void play(int x, int y)

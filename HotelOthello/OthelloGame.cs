@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Timers;
 
 namespace HotelOthello
 {
@@ -50,12 +51,33 @@ namespace HotelOthello
             get { return scores[1]; }
             set { scores[1] = value; RaisePropertyChanged("BlacksScore"); }
         }
+
         public int WhitesScore
         {
             get { return scores[0]; }
             set { scores[0] = value; RaisePropertyChanged("WhitesScore"); }
         }
-        
+
+
+        TimeSpan whitesTime;
+        TimeSpan blacksTime;
+
+        DateTime blacksReferenceTime;
+        DateTime whitesReferenceTime;
+
+        string whitesTimeString = "";
+        string blacksTimeString = "";
+
+        public string WhitesTimeString
+        {
+            get { return whitesTimeString; }
+            set { whitesTimeString = value; RaisePropertyChanged("WhitesTimeString"); }
+        }
+        public string BlacksTimeString
+        {
+            get { return blacksTimeString; }
+            set { blacksTimeString = value; RaisePropertyChanged("BlacksTimeString"); }
+        }
 
         private void RaisePropertyChanged(string v)
         {
@@ -82,8 +104,41 @@ namespace HotelOthello
             tiles[3, 3] = tiles[4, 4] = 0; // 0 : white
             
             ComputePossibleMoves();
+
+
+            blacksTime = new TimeSpan();
+            whitesTime = new TimeSpan();
+
+            whitesReferenceTime = DateTime.Now;
+            blacksReferenceTime = DateTime.Now;
+
+            Timer timer = new Timer(10);
+            timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            timer.Start();
+
         }
-        
+
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if (currentPlayer == 0)
+            {
+                whitesTime += DateTime.Now - whitesReferenceTime;
+                whitesReferenceTime = DateTime.Now;
+                WhitesTimeString = timeSpanToString(whitesTime);
+            }
+            else if (currentPlayer == 1)
+            {
+                blacksTime += DateTime.Now - blacksReferenceTime;
+                blacksReferenceTime = DateTime.Now;
+                BlacksTimeString = timeSpanToString(blacksTime);
+            }
+        }
+
+        private static string timeSpanToString(TimeSpan t)
+        {
+            return String.Format("{0:D2}:{1:D2}.{2:D3}", t.Minutes, t.Seconds, t.Milliseconds);
+        }
+
         public void ComputePossibleMoves()
         {
             possibleMoves.Clear();
@@ -169,16 +224,6 @@ namespace HotelOthello
             return $"{x}{y}";
         }
 
-        /*
-        private Tuple<int, int> stringToTuple(string str)
-        {
-            char[] ij = str.ToCharArray();
-            int i = ij[0] - '0';
-            int j = ij[1] - '0';
-
-            return new Tuple<int, int>(i, j);
-        }
-        */
 
         public bool Save(String fileName)
         {
@@ -186,7 +231,8 @@ namespace HotelOthello
             SavebleBoard board = new SavebleBoard();
             board.CurrentPlayer = this.CurrentPlayer;
             board.Tiles = this.tiles;
-
+            board.BlackTimer = this.blacksTime;
+            board.WhiteTimer = this.whitesTime;
 
             string json = JsonConvert.SerializeObject(board);
             System.IO.File.WriteAllText(fileName, json);
@@ -202,6 +248,8 @@ namespace HotelOthello
 
                 Console.WriteLine(board.CurrentPlayer);
                 this.tiles = board.Tiles;
+                this.blacksTime = board.BlackTimer;
+                this.whitesTime = board.WhiteTimer;
                 this.currentPlayer = board.CurrentPlayer;
                 this.ComputePossibleMoves();
                 this.updateScore();
@@ -269,6 +317,13 @@ namespace HotelOthello
         public void ChangePlayer()
         {
             currentPlayer = 1 - currentPlayer;
+            if (currentPlayer == 0)
+            {
+                whitesReferenceTime = DateTime.Now;
+            }else
+            {
+                blacksReferenceTime = DateTime.Now;
+            }
         }
 
         public int GetScore(bool IsForWhite)

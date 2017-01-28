@@ -39,7 +39,7 @@
         </Grid>
         <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
             <Label x:Name="lblCurrentPlayer" Content="Blacks Turn" FontSize="18"/>
-            <Grid>
+            <Grid ShowGridLines="True">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
@@ -51,10 +51,10 @@
                 </Grid.ColumnDefinitions>
                 <Label Content="Blacks"/>
                 <Label Content="Whites" Grid.Column="1"/>
-                <Label x:Name="lbl_BlacksScore" Content="{Binding Path=BlacksScore}" Grid.Row="1" FontSize="22" />
-                <Label x:Name="lbl_WhitesScore" Content="{Binding Path=WhitesScore}" Grid.Row="1" Grid.Column="1" FontSize="22" />
-                <Label x:Name="lbl_BlacksTime" Content="00'00''00" Grid.Row="2" />
-                <Label x:Name="lbl_WhitesTime" Content="00'00''00" Grid.Row="2" Grid.Column="1" />
+                <Label Content="{Binding Path=BlacksScore}" Grid.Row="1" Grid.Column="0" FontSize="22" />
+                <Label Content="{Binding Path=WhitesScore}" Grid.Row="1" Grid.Column="1" FontSize="22" />
+                <Label Content="{Binding Path=BlacksTimeString}" Grid.Row="2" Grid.Column="0" />
+                <Label Content="{Binding Path=WhitesTimeString}" Grid.Row="2" Grid.Column="1" />
             </Grid>
             <Button x:Name="btn_pass" Content="Pass" Click="btn_pass_Click" Opacity="0"/>
             <Button x:Name="buttonUndo" Content="Undo" Click="buttonUndo_Click" />

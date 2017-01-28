@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using System;
 
 namespace HotelOthello
 {
     class SavebleBoard
     {
         public int CurrentPlayer { get; set; }
-        public Decimal BlackTimer { get; set; }
-        public Decimal WhiteTimer { get; set; }
+        public TimeSpan BlackTimer { get; set; }
+        public TimeSpan WhiteTimer { get; set; }
         public int[,] Tiles { get; set; }
     }
 }
