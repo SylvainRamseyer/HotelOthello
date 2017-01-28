@@ -48,6 +48,8 @@ namespace HotelOthello
             Grid.SetColumn(this, x);
             Grid.SetRow(this, y);
 
+            //Margin = new Thickness(5);
+
             owner = -1;
         }
 

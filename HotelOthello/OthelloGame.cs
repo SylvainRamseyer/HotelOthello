@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace HotelOthello
 {
-    public class OthelloGame
+    public class OthelloGame : INotifyPropertyChanged
     {
+        // premet le databinding
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private Stack<int[,]> history;
         public const int SIZE_GRID = 8;
 
@@ -27,6 +31,7 @@ namespace HotelOthello
 
         private int currentPlayer = 1; // 1=black
         public int CurrentPlayer{ get { return currentPlayer; } }
+
         // raccourci pour obtenir la couleur qui doit jouer
         public string PlayerColor
         {
@@ -37,6 +42,23 @@ namespace HotelOthello
         }
 
         private int[] scores = { 2, 2 };
+        
+        public int BlacksScore
+        {
+            get { return scores[0]; }
+            set { scores[0] = value; RaisePropertyChanged("BlacksScore"); }
+        }
+        public int WhitesScore
+        {
+            get { return scores[1]; }
+            set { scores[1] = value; RaisePropertyChanged("WhitesScore"); }
+        }
+        
+
+        private void RaisePropertyChanged(string v)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(v));
+        }
 
         public OthelloGame()
         {
@@ -179,6 +201,15 @@ namespace HotelOthello
             return possibleMoves.ContainsKey(tupleToString(column, line));
         }
 
+        private void score(int player, int delta)
+        {
+            if (player == 0)
+                BlacksScore += delta;
+            else if (player == 1)
+                WhitesScore += delta;
+
+        }
+
         /// <summary>
         /// Will update the board status if the move is valid and return true
         /// Will return false otherwise (board is unchanged)
@@ -194,14 +225,17 @@ namespace HotelOthello
 
                 // pose une pièce sur la case jouée
                 tiles[column, line] = currentPlayer;
-                scores[currentPlayer]++;
+                //scores[currentPlayer]++;
+                score(currentPlayer, 1);
 
                 // retourne les cases capturées par ce mouvement
                 foreach (Tuple<int, int> item in possibleMoves[tupleToString(column,line)])
                 {
                     tiles[item.Item1, item.Item2] = currentPlayer;
-                    scores[currentPlayer]++;
-                    scores[1-currentPlayer]--;
+                    //scores[currentPlayer]++;
+                    //scores[1-currentPlayer]--;
+                    score(currentPlayer, 1);
+                    score(1-currentPlayer, -1);
                 }
 
                 ChangePlayer();
@@ -222,7 +256,10 @@ namespace HotelOthello
 
         public int GetScore(bool IsForWhite)
         {
-            return scores[IsForWhite ? 0 : 1];
+            //return scores[IsForWhite ? 0 : 1];
+            if (IsForWhite)
+                return WhitesScore;
+            return BlacksScore;
             /*
             int cpt = 0;
             int color = IsForWhite ? 0 : 1;
@@ -240,14 +277,16 @@ namespace HotelOthello
 
         private void updateScore()
         {
-            scores[0] = scores[1] = 0;
+            //scores[0] = scores[1] = 0;
+            WhitesScore = BlacksScore = 0;
 
             for (int y = 0; y < SIZE_GRID; y++)
             {
                 for (int x = 0; x < SIZE_GRID; x++)
                 {
                     if (tiles[x, y] != -1)
-                        scores[tiles[x, y]]++;
+                        //scores[tiles[x, y]]++;
+                        score(tiles[x, y], 1);
                 }
             }
         }

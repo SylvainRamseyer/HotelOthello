@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HotelOthello"
         mc:Ignorable="d"
-        Title="Hotel Othello" Height="350" Width="525" MinWidth="300" MinHeight="200">
+        Title="Hotel Othello" Height="350" Width="525" MinWidth="800" MinHeight="600"
+        >
     <Grid x:Name="grid1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="col"/>
@@ -42,8 +43,8 @@
         </Grid>
         <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
             <Label x:Name="lblCurrentPlayer" Content="Blacks Turn" FontSize="18"/>
-            <Label x:Name="lblWhitesScore" Content="Whites : 2"/>
-            <Label x:Name="lblBlacksScore" Content="Blacks : 2"/>
+            <Label x:Name="lbl_BlacksScore" Content="{Binding Path=BlacksScore}"/>
+            <Label x:Name="lbl_WhitesScore" Content="{Binding Path=WhitesScore}"/>
             <Button x:Name="btn_pass" Content="Pass" Width="75" Click="btn_pass_Click" Opacity="0"/>
         </StackPanel>
         <Button x:Name="buttonUndo" Content="Undo" Grid.Column="1" HorizontalAlignment="Left" Margin="65,289,0,0" VerticalAlignment="Top" Width="75" Click="buttonUndo_Click" />

@@ -39,6 +39,7 @@ namespace HotelOthello
             }
 
             game = new OthelloGame();
+            DataContext = game;
 
             // display board
             display();
@@ -56,8 +57,8 @@ namespace HotelOthello
                 }
             }
             lblCurrentPlayer.Content = $"{game.PlayerColor}s turn";
-            lblBlacksScore.Content = $"Blacks : {game.GetScore(false)}";
-            lblWhitesScore.Content = $"Whites : {game.GetScore(true)}";
+            //lblBlacksScore.Content = $"Blacks : {game.GetScore(false)}";
+            //lblWhitesScore.Content = $"Whites : {game.GetScore(true)}";
         }
 
         internal void play(int x, int y)
