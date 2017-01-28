@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -118,6 +119,41 @@ namespace HotelOthello
         {
             game.Undo();
             display();
+        }
+
+        private void ButtonSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            saveFileDialog.Filter = "Json files (*.json)|*.json";
+            saveFileDialog.FilterIndex = 1;
+            saveFileDialog.RestoreDirectory = true;
+
+            saveFileDialog.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.
+            if (saveFileDialog.FileName != "")
+            { 
+                game.Save(saveFileDialog.FileName);
+            }
+        }
+
+        private void ButtonLoad_Click(object sender, RoutedEventArgs e)
+        {
+            // Create an instance of the open file dialog box.
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Json files (*.json)|*.json";
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.Multiselect = false;
+
+            openFileDialog.ShowDialog();
+
+            // Process input if the user clicked OK.
+            if (openFileDialog.FileName != "")
+            {
+                game.load(openFileDialog.FileName);
+                display();
+            }
         }
     }
 }

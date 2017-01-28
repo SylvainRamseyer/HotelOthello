@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace HotelOthello
@@ -158,14 +160,31 @@ namespace HotelOthello
 
         public bool Save(String fileName)
         {
-            // TODO save current player and board
-            return false;
+
+            SavebleBoard board = new SavebleBoard();
+            board.CurrentPlayer = this.CurrentPlayer;
+            board.Tiles = this.tiles;
+
+
+            string json = JsonConvert.SerializeObject(board);
+            System.IO.File.WriteAllText(fileName, json);
+            return true;
         }
 
         public bool load(String fileName)
         {
-            // TODO load current player and board and dont forget to computePossibleMoves
-            return false;
+            using (StreamReader r = new StreamReader(fileName))
+            {
+                string json = r.ReadToEnd();
+                SavebleBoard board = JsonConvert.DeserializeObject<SavebleBoard>(json);
+
+                Console.WriteLine(board.CurrentPlayer);
+                this.tiles = board.Tiles;
+                this.currentPlayer = board.CurrentPlayer;
+                this.ComputePossibleMoves();
+                this.updateScore();
+            }
+            return true;
         }
 
         /// <summary>
@@ -208,7 +227,6 @@ namespace HotelOthello
 
                 // calcul les coups possibles pour le prochain tour
                 ComputePossibleMoves();
-
                 return true;
             }
             Console.WriteLine($"can't make the move : {column}:{line}");

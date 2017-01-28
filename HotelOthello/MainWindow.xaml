@@ -8,13 +8,14 @@
         Title="Hotel Othello" Height="350" Width="525" MinWidth="300" MinHeight="200">
     <Grid x:Name="grid1">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="col"/>
+            <ColumnDefinition x:Name="col" Width="7*"/>
+            <ColumnDefinition Width="360*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid 
             x:Name="grid"
             ShowGridLines="True"
-            MaxWidth="{Binding ActualHeight, ElementName=grid, Mode=OneWay}" 
+            MaxWidth="{Binding ActualHeight, ElementName=grid, Mode=OneWay}" Grid.ColumnSpan="2" 
             >
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -40,12 +41,14 @@
             <Button x:Name="button1" Content="Button" Grid.Row="1" Grid.Column="2" BorderBrush="Red" BorderThickness="10"/>
             <Rectangle Grid.Column="3" Fill="#FFF4F4F5" Grid.Row="2" />
         </Grid>
-        <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
+        <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
             <Label x:Name="lblCurrentPlayer" Content="Blacks Turn" FontSize="18"/>
             <Label x:Name="lblWhitesScore" Content="Whites : 2"/>
             <Label x:Name="lblBlacksScore" Content="Blacks : 2"/>
             <Button x:Name="btn_pass" Content="Pass" Width="75" Click="btn_pass_Click" Opacity="0"/>
         </StackPanel>
-        <Button x:Name="buttonUndo" Content="Undo" Grid.Column="1" HorizontalAlignment="Left" Margin="65,289,0,0" VerticalAlignment="Top" Width="75" Click="buttonUndo_Click" />
+        <Button x:Name="buttonUndo" Content="Undo" Grid.Column="2" HorizontalAlignment="Left" Margin="65,239,0,0" VerticalAlignment="Top" Width="75" Click="buttonUndo_Click" />
+        <Button x:Name="ButtonSave" Content="Save" Grid.Column="2" HorizontalAlignment="Left" Margin="65,264,0,0" VerticalAlignment="Top" Width="75" Click="ButtonSave_Click"/>
+        <Button x:Name="ButtonLoad" Content="Load" Grid.Column="2" HorizontalAlignment="Left" Margin="65,289,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.107,-6.8" Click="ButtonLoad_Click"/>
     </Grid>
 </Window>
