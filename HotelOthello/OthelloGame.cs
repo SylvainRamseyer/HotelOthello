@@ -59,14 +59,12 @@ namespace HotelOthello
         }
 
 
-        TimeSpan whitesTime;
-        TimeSpan blacksTime;
-
-        DateTime blacksReferenceTime;
-        DateTime whitesReferenceTime;
+        TimeSpan[] playersTimes = { TimeSpan.Zero, TimeSpan.Zero };
+        DateTime[] referenceTimes = { DateTime.Now, DateTime.Now };
 
         string whitesTimeString = "";
         string blacksTimeString = "";
+        private Timer timer;
 
         public string WhitesTimeString
         {
@@ -105,14 +103,7 @@ namespace HotelOthello
             
             ComputePossibleMoves();
 
-
-            blacksTime = new TimeSpan();
-            whitesTime = new TimeSpan();
-
-            whitesReferenceTime = DateTime.Now;
-            blacksReferenceTime = DateTime.Now;
-
-            Timer timer = new Timer(10);
+            timer = new Timer(25); // 40 rafraichissements par secondes
             timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             timer.Start();
 
@@ -120,23 +111,33 @@ namespace HotelOthello
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
+            computeTime(currentPlayer);
             if (currentPlayer == 0)
-            {
-                whitesTime += DateTime.Now - whitesReferenceTime;
-                whitesReferenceTime = DateTime.Now;
-                WhitesTimeString = timeSpanToString(whitesTime);
-            }
+                WhitesTimeString = timeSpanToString(playersTimes[0]);
             else if (currentPlayer == 1)
-            {
-                blacksTime += DateTime.Now - blacksReferenceTime;
-                blacksReferenceTime = DateTime.Now;
-                BlacksTimeString = timeSpanToString(blacksTime);
-            }
+                BlacksTimeString = timeSpanToString(playersTimes[1]);
+        }
+
+        private void computeTime(int player)
+        {
+            playersTimes[player] += DateTime.Now - referenceTimes[player];
+            referenceTimes[player] = DateTime.Now;
         }
 
         private static string timeSpanToString(TimeSpan t)
         {
             return String.Format("{0:D2}:{1:D2}.{2:D3}", t.Minutes, t.Seconds, t.Milliseconds);
+        }
+
+        public void StopTimer()
+        {
+            timer.Stop();
+        }
+
+        public void RestartTimer()
+        {
+            referenceTimes[currentPlayer] = DateTime.Now;
+            timer.Start();
         }
 
         public void ComputePossibleMoves()
@@ -231,8 +232,8 @@ namespace HotelOthello
             SavebleBoard board = new SavebleBoard();
             board.CurrentPlayer = this.CurrentPlayer;
             board.Tiles = this.tiles;
-            board.BlackTimer = this.blacksTime;
-            board.WhiteTimer = this.whitesTime;
+            board.BlackTimer = this.playersTimes[1];
+            board.WhiteTimer = this.playersTimes[0];
 
             string json = JsonConvert.SerializeObject(board);
             System.IO.File.WriteAllText(fileName, json);
@@ -248,8 +249,8 @@ namespace HotelOthello
 
                 Console.WriteLine(board.CurrentPlayer);
                 this.tiles = board.Tiles;
-                this.blacksTime = board.BlackTimer;
-                this.whitesTime = board.WhiteTimer;
+                this.playersTimes[1] = board.BlackTimer;
+                this.playersTimes[0] = board.WhiteTimer;
                 this.currentPlayer = board.CurrentPlayer;
                 this.ComputePossibleMoves();
                 this.updateScore();
@@ -317,13 +318,7 @@ namespace HotelOthello
         public void ChangePlayer()
         {
             currentPlayer = 1 - currentPlayer;
-            if (currentPlayer == 0)
-            {
-                whitesReferenceTime = DateTime.Now;
-            }else
-            {
-                blacksReferenceTime = DateTime.Now;
-            }
+            referenceTimes[currentPlayer] = DateTime.Now;
         }
 
         public int GetScore(bool IsForWhite)

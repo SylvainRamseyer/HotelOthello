@@ -122,6 +122,7 @@ namespace HotelOthello
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
+            game.StopTimer();
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
             saveFileDialog.Filter = "Json files (*.json)|*.json";
@@ -135,10 +136,12 @@ namespace HotelOthello
             { 
                 game.Save(saveFileDialog.FileName);
             }
+            game.RestartTimer();
         }
 
         private void ButtonLoad_Click(object sender, RoutedEventArgs e)
         {
+            game.StopTimer();
             // Create an instance of the open file dialog box.
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Json files (*.json)|*.json";
@@ -153,6 +156,7 @@ namespace HotelOthello
                 game.load(openFileDialog.FileName);
                 display();
             }
+            game.RestartTimer();
         }
     }
 }
