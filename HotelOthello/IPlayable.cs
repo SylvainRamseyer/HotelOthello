@@ -61,3 +61,6 @@ namespace OthelloConsole
         /// </summary>
         /// <returns></returns>
         int getBlackScore();
+
+    }
+}
