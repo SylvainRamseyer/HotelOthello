@@ -300,10 +300,6 @@ namespace HotelOthello
             referenceTimes[currentPlayer] = DateTime.Now;
         }
 
-        /**
-         *  TOOLS
-         */
-
         /// <summary>
         /// Returns true if the move is valid for specified color
         /// </summary>
