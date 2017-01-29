@@ -16,34 +16,41 @@ namespace HotelOthello
         {
             InitializeComponent();
 
+            // Crée et place les tuiles dans l'interface graphique
             for (int y = 0; y < OthelloGame.SIZE_GRID; y++)
             {
                 for (int x = 0; x < OthelloGame.SIZE_GRID; x++)
                 {
                     TileButton newBtn = new TileButton(x, y, this);
+                    // Ajoute le bouton à la grille
                     gridOthello.Children.Add(newBtn);
                     tiles[x, y] = newBtn;
                 }
             }
 
+            // Initialise le jeu
             game = new OthelloGame();
+            // Défini le contexte de données pour le databinding
             DataContext = game;
-
-            // display board
+            
+            // Actualise les tuiles en fonction du jeu
             display();
 
         }
 
         private void display()
         {
-            for(int y=0; y< OthelloGame.SIZE_GRID; y++)
+            for(int y=0; y < OthelloGame.SIZE_GRID; y++)
             {
-                for(int x=0; x< OthelloGame.SIZE_GRID; x++)
+                for(int x=0; x < OthelloGame.SIZE_GRID; x++)
                 {
-                    tiles[x, y].IsPlayable = game.IsPlayable(x, y);
+                    // Change la couleur de la tuile en fonction du jeu
                     tiles[x, y].Owner = game.Tiles[x, y];
+                    // Met en évidence les tuiles jouables
+                    tiles[x, y].IsPlayable = game.IsPlayable(x, y);
                 }
             }
+            // Actualise le cercle qui indique quelle couleur doit jouer
             circle.Fill = (SolidColorBrush)new BrushConverter().ConvertFromString(game.PlayerColor);
         }
 
@@ -66,10 +73,9 @@ namespace HotelOthello
                     if (!game.CanMove)
                     {
                         game.StopTimer();
-                        string winner = game.GetWinnerString();
                         
                         MessageBoxResult result = MessageBox.Show(
-                            $"{winner}\nWould you like to play again ?", "GAME OVER",
+                            $"{game.GetWinnerString()}\nWould you like to play again ?", "GAME OVER",
                             MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (result == MessageBoxResult.Yes)
@@ -78,15 +84,10 @@ namespace HotelOthello
                             DataContext = game;
                             display();
                         }
-                        else
-                        {
-                            Application.Current.Shutdown();
-                        }
                     }
                     else
                     {
                         // si l'autre joueur peut jouer, affiche un bouton pour passer au tour suivant
-                        // todo : un autre message box ?
                         btn_pass.Visibility = Visibility.Visible;
                     }
                 }
@@ -95,6 +96,7 @@ namespace HotelOthello
 
         private void btn_pass_Click(object sender, RoutedEventArgs e)
         {
+            // le joueur bloqué a cliqué sur Pass, on rafraichit simplement l'affichage en fonction de l'état de jeu
             btn_pass.Visibility = Visibility.Hidden;
             display();
         }
@@ -132,7 +134,7 @@ namespace HotelOthello
             // Process input if the user clicked OK.
             if (openFileDialog.FileName != "")
             {
-                game.load(openFileDialog.FileName);
+                game.Load(openFileDialog.FileName);
                 display();
             }
             game.RestartTimer();
@@ -142,6 +144,17 @@ namespace HotelOthello
         {
             game.Undo();
             display();
+        }
+
+        private void menuPause_Click(object sender, RoutedEventArgs e)
+        {
+            game.StopTimer();
+            // cache le pllateau de jeu pour éviter l'abus du bouton pour du rab de temps de reflexion
+            gridOthello.Visibility = Visibility.Hidden;
+            MessageBoxResult result = MessageBox.Show(
+                "Game paused, Click OK to continue", "PAUSE");
+            gridOthello.Visibility = Visibility.Visible;
+            game.RestartTimer();
         }
     }
 }
