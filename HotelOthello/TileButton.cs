@@ -3,32 +3,37 @@ using System.Windows.Media;
 
 namespace HotelOthello
 {
+    /// <summary>
+    /// Customisation du Contrôle bouton standard.
+    /// </summary>
     internal class TileButton : Button
     {
         int owner,x,y;
         MainWindow ui;
         bool isPlayable;
 
+        // tableau qui contient les 4 backgrounds possibles pour un bouton
+        Brush[] BRUSHES = { Brushes.Transparent, Brushes.White, Brushes.Black, new SolidColorBrush(Color.FromArgb(40, 0, 255, 30)) };
+
         public int Owner
         {
             get { return owner; }
-            set {
-                if (value == 1)
-                    B();
-                else if (value == 0)
-                    W();
+            set
+            {
+                owner = value;
+                // -1 -> transparent, 0 -> blanc, 1 -> noir
+                Background = BRUSHES[owner+1];
             }
         }
 
 
         public bool IsPlayable
         {
-            set {
+            set
+            {
                 isPlayable = value;
                 if (isPlayable)
-                    Background = new SolidColorBrush(Color.FromArgb(40, 0, 255, 30));
-                else
-                    Background = Brushes.Transparent;
+                    Background = BRUSHES[3];
             }
         }
 
@@ -37,25 +42,11 @@ namespace HotelOthello
             this.x = x;
             this.y = y;
             this.ui = parent;
-
-            Name = $"Button{x}{y}";
-
+            
             Grid.SetColumn(this, x);
             Grid.SetRow(this, y);
 
             owner = -1;
-        }
-
-        public void B()
-        {
-            owner = 1;
-            Background = Brushes.Black;
-        }
-
-        public void W()
-        {
-            owner = 0;
-            Background = Brushes.White;
         }
         
         protected override void OnClick()

@@ -23,7 +23,7 @@
         </LinearGradientBrush>
     </Window.Background>
     <DockPanel>
-        <Menu DockPanel.Dock="Top" Background="#7FFFFFFF" Padding="5,5,0,5">
+        <Menu DockPanel.Dock="Top" Background="#7FFFFFFF" Padding="5">
             <MenuItem x:Name="menuSave" Header="_Save" Click="menuSave_Click"/>
             <MenuItem x:Name="menuLoad" Header="_Open" Click="menuLoad_Click"/>
             <MenuItem x:Name="menuUndo" Header="_Undo" Click="menuUndo_Click"/>
@@ -85,7 +85,7 @@
                 </Grid>
                 <Button x:Name="btn_pass" Click="btn_pass_Click" Content="Pass" Background="#33FFFFFF" Margin="0,20,0,0" Visibility="Hidden"/>
                 <Label Content="Who's playing ?" HorizontalAlignment="Center" FontStyle="Italic"/>
-                <Ellipse x:Name="circle" Width="60" Height="60" VerticalAlignment="Top" HorizontalAlignment="Center" Fill="Black" StrokeThickness="2"/>
+                <Ellipse x:Name="circle" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Center" Fill="Black" StrokeThickness="2"/>
             </StackPanel>
         </Grid>
     </DockPanel>
