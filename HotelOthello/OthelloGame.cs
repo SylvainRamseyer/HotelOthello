@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using OthelloConsole;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ using System.Timers;
 
 namespace HotelOthello
 {
-    public class OthelloGame : INotifyPropertyChanged
+    public class OthelloGame : INotifyPropertyChanged, IPlayable
     {
         // Permet le databinding. Cet évènement est invoqué dans la méthode RaisePropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -185,21 +186,15 @@ namespace HotelOthello
             // Liste contenant les coordonéées des cases voisines qui sont occupées par un ennemis 
             List<Tuple<int, int>> voisins = new List<Tuple<int, int>>();
 
-            // Parcoure les 9 tuiles autour de cette tuile, ajoute celles qui sont occupées par un ennemi
+            // Parcoure les tuiles autour de cette tuile, ajoute celles qui sont occupées par un ennemi
             // à la liste des voisins
             for (int i = column - 1; i <= column + 1; i++)
             {
                 for (int j = line - 1; j <= line + 1; j++)
                 {
-                    try
-                    {
-                        if (Tiles[i, j] == ennemi)
-                            voisins.Add(new Tuple<int, int>(i, j));
-                    }
-                    catch (Exception)
-                    {
-                        // si la case n'existe pas, on ne fait rien
-                    }
+                    bool outside = i < 0 || i >= SIZE_GRID || j < 0 || j >= SIZE_GRID;
+                    if (!outside && Tiles[i, j] == ennemi)
+                        voisins.Add(new Tuple<int, int>(i, j));
                 }
             }
 
@@ -253,43 +248,6 @@ namespace HotelOthello
             return;
         }
 
-        /// <summary>
-        /// Will update the board status if the move is valid and return true
-        /// Will return false otherwise (board is unchanged)
-        /// </summary>
-        /// <param name="column">value between 0 and 7</param>
-        /// <param name="line">value between 0 and 7</param>
-        /// <returns></returns>
-        public bool PlayMove(int column, int line)
-        {
-            if (IsPlayable(column, line))
-            {
-                SaveInHistory();
-
-                // pose une pièce sur la case jouée
-                tiles[column, line] = currentPlayer;
-                score(currentPlayer, 1);
-
-                // retourne les cases ennemies capturées par ce mouvement
-                foreach (Tuple<int, int> item in possibleMoves[tupleToString(column, line)])
-                {
-                    tiles[item.Item1, item.Item2] = currentPlayer;
-                    // incrémente le score du joueur
-                    score(currentPlayer, 1);
-                    // décrémente le score de l'ennemi
-                    score(1 - currentPlayer, -1);
-                }
-
-                ChangePlayer();
-
-                // Calcul les coups possibles pour le prochain tour
-                ComputePossibleMoves();
-                return true;
-            }
-            Console.WriteLine($"can't make the move : {column}:{line}");
-            return false;
-        }
-
         public void ChangePlayer()
         {
             // Ajoute le temps de reflexion du joueur à son chrono
@@ -298,17 +256,6 @@ namespace HotelOthello
             currentPlayer = 1 - currentPlayer;
             // "Démarre" le chrono du prochain joueur
             referenceTimes[currentPlayer] = DateTime.Now;
-        }
-
-        /// <summary>
-        /// Returns true if the move is valid for specified color
-        /// </summary>
-        /// <param name="column">value between 0 and 7</param>
-        /// <param name="line">value between 0 and 7</param>
-        /// <returns></returns>
-        public bool IsPlayable(int column, int line)
-        {
-            return possibleMoves.ContainsKey(tupleToString(column, line));
         }
 
         private void score(int player, int delta)
@@ -450,6 +397,105 @@ namespace HotelOthello
         private String tupleToString(int x, int y)
         {
             return $"{x}{y}";
+        }
+
+        /***
+         * IPlayable integration
+         */
+
+        /// <summary>
+        /// Returns true if the move is valid for specified color
+        /// </summary>
+        /// <param name="column">value between 0 and 7</param>
+        /// <param name="line">value between 0 and 7</param>
+        /// <returns></returns>
+        public bool isPlayable(int column, int line, bool isWhite=true)
+        {
+            return possibleMoves.ContainsKey(tupleToString(column, line));
+        }
+
+        /// <summary>
+        /// Asks the game engine next (valid) move given a game position
+        /// The board assumes following standard move notation:
+        /// 
+        ///         A B C D E F G H
+        ///       1
+        ///       2
+        ///       3
+        ///       4
+        ///       5
+        ///       6
+        ///       7
+        ///       8
+        ///       
+        ///          Column Line
+        ///  E.g.: D3, F4
+        /// </summary>
+        /// <param name="game">a 2D board with 0 for white 1 for black and -1 for empty tiles. First index for the column, second index for the line</param>
+        /// <param name="level">an integer value to set the level of the IA</param>
+        /// <param name="whiteTurn">true if white players turn, false otherwise</param>
+        /// <returns></returns>
+        public Tuple<char, int> getNextMove(int[,] game, int level, bool whiteTurn)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// Will update the board status if the move is valid and return true
+        /// Will return false otherwise (board is unchanged)
+        /// </summary>
+        /// <param name="column">value between 0 and 7</param>
+        /// <param name="line">value between 0 and 7</param>
+        /// <param name="isWhite">true for white move, false for black move</param>
+        /// <returns></returns>
+        public bool playMove(int column, int line, bool isWhite=true)
+        {
+            if (isPlayable(column, line, isWhite))
+            {
+                SaveInHistory();
+
+                // pose une pièce sur la case jouée
+                tiles[column, line] = currentPlayer;
+                score(currentPlayer, 1);
+
+                // retourne les cases ennemies capturées par ce mouvement
+                foreach (Tuple<int, int> item in possibleMoves[tupleToString(column, line)])
+                {
+                    tiles[item.Item1, item.Item2] = currentPlayer;
+                    // incrémente le score du joueur
+                    score(currentPlayer, 1);
+                    // décrémente le score de l'ennemi
+                    score(1 - currentPlayer, -1);
+                }
+
+                ChangePlayer();
+
+                // Calcul les coups possibles pour le prochain tour
+                ComputePossibleMoves();
+                return true;
+            }
+            Console.WriteLine($"can't make the move : {column}:{line}");
+            return false;
+        }
+
+
+        /// <summary>
+        /// Returns the number of white tiles on the board
+        /// </summary>
+        /// <returns></returns>
+        public int getWhiteScore()
+        {
+            return WhitesScore;
+        }
+
+        /// <summary>
+        /// Returns the number of black tiles
+        /// </summary>
+        /// <returns></returns>
+        public int getBlackScore()
+        {
+            return BlacksScore;
         }
     }
 }

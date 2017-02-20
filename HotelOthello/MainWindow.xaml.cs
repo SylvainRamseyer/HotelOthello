@@ -47,7 +47,7 @@ namespace HotelOthello
                     // Change la couleur de la tuile en fonction du jeu
                     tiles[x, y].Owner = game.Tiles[x, y];
                     // Met en évidence les tuiles jouables
-                    tiles[x, y].IsPlayable = game.IsPlayable(x, y);
+                    tiles[x, y].IsPlayable = game.isPlayable(x, y);
                 }
             }
             // Actualise le cercle qui indique quelle couleur doit jouer
@@ -57,7 +57,7 @@ namespace HotelOthello
         internal void play(int x, int y)
         {
             // tente de jouer le mouvement
-            if (game.PlayMove(x, y))
+            if (game.playMove(x, y))
             {
                 // si le mouvement est valide, affiche la nouvelle disposition du jeu
                 display();
