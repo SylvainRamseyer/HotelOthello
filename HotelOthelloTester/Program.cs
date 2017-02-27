@@ -38,7 +38,7 @@ namespace HotelOthelloTester
                 debug(tiles);
                 Console.ReadKey();
 
-                var move = IAs[whitesTurn ? 0 : 1].GetNextMove(tiles, 5, whitesTurn);
+                var move = IAs[whitesTurn ? 1 : 0].GetNextMove(tiles, 5, whitesTurn);
                 if(move.Item1 == -1 && move.Item2 == -1)
                 {
                     passCount++;
@@ -51,8 +51,11 @@ namespace HotelOthelloTester
                 }
                 tiles = IAs[0].GetBoard();
                 whitesTurn = !whitesTurn;
+
             }
-            Console.WriteLine("finished");
+
+            string winner = IAs[0].GetWhiteScore() > IAs[0].GetBlackScore() ? "white wins" : "black wins";
+            Console.WriteLine($"finished, {winner}");
             Console.ReadKey();
 
         }
