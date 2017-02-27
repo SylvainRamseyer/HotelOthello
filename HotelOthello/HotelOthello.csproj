@@ -60,6 +60,7 @@
     </ApplicationDefinition>
     <Compile Include="IAOthello.cs" />
     <Compile Include="IPlayable.cs" />
+    <Compile Include="PerezRamseyer.cs" />
     <Compile Include="SavebleBoard.cs" />
     <Compile Include="TileButton.cs" />
     <Page Include="MainWindow.xaml">
