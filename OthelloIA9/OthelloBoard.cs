@@ -10,6 +10,43 @@ namespace OthelloIA9
     class OthelloBoard : IPlayable.IPlayable
     {
 
+        /*
+         * matrice d'indication des poids de chaque cases
+        500  -150 30 10 10 30 -150 500
+        -150 -250 0  0  0  0  -250 -150
+        30   0    1  2  2  1  0    30
+        10   0    2  16 16 2  0    10
+        10   0    2  16 16 2  0    10
+        30   0    1  2  2  1  0    30
+        -150 -250 0  0  0  0  -250 -150
+        500  -150 30 10 10 30 -150 500
+        */
+        public static readonly int[,] WEIGHT_MATRIX = {
+            {500, -150, 30, 10, 10, 30, -150, 500},
+            {-150, -250, 0, 0, 0, 0, -250, -150},
+            {30, 0, 1, 2, 2, 1, 0, 30},
+            {10, 0, 2, 16, 16, 2, 0, 10},
+            {10, 0, 2, 16, 16, 2, 0, 10},
+            {30, 0, 1, 2, 2, 1, 0, 30},
+            {-150, -250, 0, 0, 0, 0, -250, -150},
+            {500, -150, 30, 10, 10, 30, -150, 500}
+        };
+
+        private int[] scores = { 2, 2 };
+
+        // Ces deux propriétés Lancent l'évènement PropertyChanged qui actualise l'affichage
+        public int BlacksScore
+        {
+            get { return scores[1]; }
+            set { scores[1] = value;}
+        }
+
+        public int WhitesScore
+        {
+            get { return scores[0]; }
+            set { scores[0] = value; }
+        }
+
         // tableau 2d d'entiers représentant le plateau de jeu
         // -1 : case libre
         //  0 : blanc
@@ -37,7 +74,7 @@ namespace OthelloIA9
 
         public string GetName()
         {
-            throw new NotImplementedException();
+            return "IA9 PerezRamseyer";
         }
 
         public bool IsPlayable(int column, int line, bool isWhite)
@@ -47,7 +84,8 @@ namespace OthelloIA9
 
         public bool PlayMove(int column, int line, bool isWhite)
         {
-            throw new NotImplementedException();
+            tiles[column, line] = isWhite ? 0 : 1 ;
+            return true;
         }
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
@@ -57,17 +95,25 @@ namespace OthelloIA9
 
         public int[,] GetBoard()
         {
-            throw new NotImplementedException();
+            return tiles;
         }
 
         public int GetWhiteScore()
         {
-            throw new NotImplementedException();
+            return WhitesScore;
         }
 
         public int GetBlackScore()
         {
-            throw new NotImplementedException();
+            return BlacksScore;
+        }
+
+        private void score(int player, int delta)
+        {
+            if (player == 1)
+                BlacksScore += delta;
+            else if (player == 0)
+                WhitesScore += delta;
         }
     }
 }
