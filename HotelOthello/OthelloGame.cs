@@ -312,7 +312,6 @@ namespace HotelOthello
 
         public bool Save(String fileName)
         {
-
             SavebleBoard board = new SavebleBoard();
             board.CurrentPlayer = this.CurrentPlayer;
             board.Tiles = this.tiles;
@@ -399,7 +398,7 @@ namespace HotelOthello
             return $"{x}{y}";
         }
 
-        /***
+        /*
          * IPlayable integration
          */
 
