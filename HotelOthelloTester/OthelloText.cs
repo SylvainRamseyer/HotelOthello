@@ -63,7 +63,7 @@ namespace HotelOthelloTester
             int i = ij[0] - '0';
             int j = ij[1] - '0';
             //tiles[i, j] = currentPlayer;
-            return game.PlayMove(i, j);
+            return game.playMove(i, j);
         }
 
     }

@@ -30,7 +30,7 @@ namespace HotelOthello
 
         // clé: string représentant un mouvement, exemple : "07"
         // valeur: liste des tuiles capturées si ce mouvement est effectué
-        private Dictionary<String,List<Tuple<int, int>>> possibleMoves;
+        private Dictionary<String, List<Tuple<int, int>>> possibleMoves;
         public bool CanMove { get { return possibleMoves.Count > 0; } }
 
         private int currentPlayer = 1; // 1=black

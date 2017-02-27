@@ -55,6 +55,10 @@
       <Project>{A9B7C8C4-C0A7-4BF2-8E9A-8BED5D8F19D2}</Project>
       <Name>HotelOthello</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OthelloIA9\OthelloIA9.csproj">
+      <Project>{d6e5cbc7-a619-4cab-915b-849625efea72}</Project>
+      <Name>OthelloIA9</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
