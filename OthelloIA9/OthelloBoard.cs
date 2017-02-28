@@ -52,7 +52,7 @@ namespace OthelloIA9
         //  1 : noir
         private int[,] tiles;
 
-        int me, ennemi;
+        private int me, ennemi;
 
         public const int SIZE_GRID = 8;
 
@@ -94,7 +94,7 @@ namespace OthelloIA9
         public bool PlayMove(int column, int line, bool isWhite)
         {
             int currentPlayer = isWhite ? 0 : 1;
-            List<Tuple<int, int>> catched = computeMove(column, line, currentPlayer);
+            List<Tuple<int, int>> catched = computeMove(tiles, column, line, currentPlayer);
             if (catched == null)
                 return false;
 
@@ -123,7 +123,7 @@ namespace OthelloIA9
             me = whiteTurn ? 0 : 1;
             ennemi = 1 - me;
 
-            var possibleMoves = ComputePossibleMoves(me);
+            var possibleMoves = ComputePossibleMoves(tiles, me);
 
             if (possibleMoves.Count() > 0)
                 return minmax(tiles, level);
@@ -168,7 +168,7 @@ namespace OthelloIA9
         /// les cases capturées si le mouvement est joué.
         /// On refait ce calcul à chaque tour.
         /// </summary>
-        public Dictionary<string, List<Tuple<int, int>>> ComputePossibleMoves(int player)
+        public Dictionary<string, List<Tuple<int, int>>> ComputePossibleMoves(int[,] board, int player)
         {
             //possibleMoves.Clear();
             Dictionary<string, List<Tuple<int, int>>> possibleMoves = new Dictionary<string, List<Tuple<int, int>>>();
@@ -177,7 +177,7 @@ namespace OthelloIA9
             {
                 for (int line = 0; line < SIZE_GRID; line++)
                 {
-                    List<Tuple<int, int>> catched = computeMove(column, line, player);
+                    List<Tuple<int, int>> catched = computeMove(board, column, line, player);
                     if (catched != null)
                         possibleMoves.Add(tupleToString(column, line), catched);
                 }
@@ -192,10 +192,10 @@ namespace OthelloIA9
         /// - l'une de ses voisines est occupée par un ennemi
         /// - l'autre extrémité est occupée par le joueur
         /// </summary>
-        private List<Tuple<int, int>> computeMove(int column, int line, int player)
+        private List<Tuple<int, int>> computeMove(int[,] board, int column, int line, int player)
         {
             // Retourne si la tuile est déjà occupée
-            if (tiles[column, line] != -1)
+            if (board[column, line] != -1)
                 return null;
 
             int ennemi = 1 - player;
@@ -210,7 +210,7 @@ namespace OthelloIA9
                 for (int j = line - 1; j <= line + 1; j++)
                 {
                     bool outside = i < 0 || i >= SIZE_GRID || j < 0 || j >= SIZE_GRID;
-                    if (!outside && tiles[i, j] == ennemi)
+                    if (!outside && board[i, j] == ennemi)
                         voisins.Add(new Tuple<int, int>(i, j));
                 }
             }
@@ -237,7 +237,7 @@ namespace OthelloIA9
 
                 bool outside = false;
                 // on suit la ligne et on ajoute les cases tant qu'on est sur un ennemi
-                while (!outside && tiles[x, y] == ennemi)
+                while (!outside && board[x, y] == ennemi)
                 {
                     temp.Add(new Tuple<int, int>(x, y));
                     // on se déplace selon la direction de la ligne
@@ -250,7 +250,7 @@ namespace OthelloIA9
                 // maintenant, soit c'est une case vide et on ne fait rien, soit c'est une case
                 // du joueur et donc on capture toutes les cases mise en attente dans temp
                 //if (tiles[x, y] == currentPlayer)
-                if (!outside && tiles[x, y] == player)
+                if (!outside && board[x, y] == player)
                     catchedTiles.AddRange(temp);
             }
 
@@ -276,8 +276,8 @@ namespace OthelloIA9
 
         private Tuple<int, int> stringToTuple(string str)
         {
-            int column = (int)(str[0] - '0');
-            int line = (int)(str[1] - '0');
+            int column = str[0] - '0';
+            int line = str[1] - '0';
             return new Tuple<int, int>(column, line);
         }
         #endregion
@@ -287,7 +287,7 @@ namespace OthelloIA9
         {
             if (depth == 0)
             {
-                var possibleMoves = ComputePossibleMoves(me);
+                var possibleMoves = ComputePossibleMoves(board, me);
                 return stringToTuple(possibleMoves.ElementAt(new Random().Next(0, possibleMoves.Count)).Key);
             }
 
@@ -299,12 +299,14 @@ namespace OthelloIA9
         
         private int minOrMax(int[,] board, int depth, int player, out Tuple<int,int> op, int maximize)
         {
-            var possibleMoves = ComputePossibleMoves(player);
+            
+            var possibleMoves = ComputePossibleMoves(board, player);
             if (depth == 0 || possibleMoves.Count == 0)
             {
                 op = new Tuple<int, int>(-1, -1);
                 return maximize * score(board, player);
             }
+            
             int maxVal = Int32.MinValue;
             Tuple<int, int> maxOp = null;
             foreach (var move in possibleMoves)
@@ -336,15 +338,15 @@ namespace OthelloIA9
             return newBoard;
         }
 
-        private int score(int[,] tiles, int player)
+        private int score(int[,] board, int player)
         {
             int[] scores = { 0, 0 };
             for (int y = 0; y < SIZE_GRID; y++)
             {
                 for (int x = 0; x < SIZE_GRID; x++)
                 {
-                    if (tiles[x, y] != -1)
-                        scores[tiles[x, y]]++;
+                    if (board[x, y] != -1)
+                        scores[board[x, y]]++;
                 }
             }
             //return scores[player];

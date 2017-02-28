@@ -38,7 +38,7 @@ namespace HotelOthelloTester
                 debug(tiles);
                 Console.ReadKey();
 
-                var move = IAs[whitesTurn ? 1 : 0].GetNextMove(tiles, 5, whitesTurn);
+                var move = IAs[whitesTurn ? 1 : 0].GetNextMove(tiles, whitesTurn ? 0 : 5, whitesTurn);
                 if(move.Item1 == -1 && move.Item2 == -1)
                 {
                     passCount++;
