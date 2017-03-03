@@ -291,63 +291,51 @@ namespace OthelloIA9
                 return stringToTuple(possibleMoves.ElementAt(new Random().Next(0, possibleMoves.Count)).Key);
             }
 
-            //Tuple<int, int> op;
-            //minOrMax(board, depth, me, out op, 1);
-            //return op;
-
-            Tuple<int, int> op;
-            max(board, depth, me, out op);
-            return op;
+            return max(board, depth, me).Item2;
         }
 
-        private int max(int[,] board, int depth, int player, out Tuple<int, int> op)
+        private Tuple<int, Tuple<int, int>> max(int[,] board, int depth, int player)
         {
             var possibleMoves = ComputePossibleMoves(board, player);
             if (depth == 0 || possibleMoves.Count == 0)
             {
-                op = null;
-                return score(board, player);
+                return new Tuple<int, Tuple<int, int>>(score(board, player), null);
             }
             int maxVal = Int32.MinValue;
             Tuple<int, int> maxOp = null;
             foreach (var move in possibleMoves)
             {
                 int[,] newBoard = apply(board, move, player);
-                Tuple<int, int> tmpOp = null;
-                int val = min(newBoard, depth - 1, player, out tmpOp);
+                int val = min(newBoard, depth - 1, player).Item1;
                 if (val > maxVal)
                 {
                     maxVal = val;
                     maxOp = stringToTuple(move.Key);
                 }
             }
-            op = maxOp;
-            return maxVal;
+            return new Tuple<int, Tuple<int, int>>(maxVal, maxOp);
         }
 
-        private int min(int[,] board, int depth, int player, out Tuple<int, int> op)
+        private Tuple<int, Tuple<int, int>> min(int[,] board, int depth, int player)
         {
             var possibleMoves = ComputePossibleMoves(board, player);
             if (depth == 0 || possibleMoves.Count == 0)
             {
-                op = null;
-                return score(board, player);
+                return new Tuple<int, Tuple<int, int>>(score(board, player), null);
             }
             int minVal = Int32.MaxValue;
             Tuple<int, int> minOp = null;
             foreach (var move in possibleMoves)
             {
                 int[,] newBoard = apply(board, move, player);
-                Tuple<int, int> tmpOp = null;
-                int val = max(newBoard, depth - 1, player, out tmpOp);
+                int val = max(newBoard, depth - 1, player).Item1;
                 if (val < minVal)
                 {
                     minVal = val;
                     minOp = stringToTuple(move.Key);
                 }
             }
-            op = minOp;
-            return minVal;
+            return new Tuple<int, Tuple<int, int>>(minVal, minOp);
         }
 
         /*
@@ -404,9 +392,9 @@ namespace OthelloIA9
                         scores[board[x, y]] += WEIGHT_MATRIX[x,y];
                 }
             }
-            return scores[player];
+            //return scores[player];
             // mon score moins le score de l'autre
-            //return scores[player] - scores[1 - player];
+            return scores[player] - scores[1 - player];
         }
 
         #endregion
