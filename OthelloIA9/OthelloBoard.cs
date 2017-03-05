@@ -291,7 +291,7 @@ namespace OthelloIA9
                 return stringToTuple(possibleMoves.ElementAt(new Random().Next(0, possibleMoves.Count)).Key);
             }
 
-            return max(board, depth, me, Int32.MinValue).Item2;
+            return max(board, depth, me, Int32.MaxValue).Item2;
             //return minOrMax(board, depth, me, 1).Item2;
         }
 
