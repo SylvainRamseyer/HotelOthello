@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using HotelOthello;
 
 using OthelloIA9;
-using OthelloIA2;
 
 namespace HotelOthelloTester
 {

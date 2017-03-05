@@ -291,12 +291,12 @@ namespace OthelloIA9
                 return stringToTuple(possibleMoves.ElementAt(new Random().Next(0, possibleMoves.Count)).Key);
             }
 
-            return max(board, depth, me).Item2;
+            return max(board, depth, me, Int32.MinValue).Item2;
             //return minOrMax(board, depth, me, 1).Item2;
         }
 
         
-        private Tuple<int, Tuple<int, int>> max(int[,] board, int depth, int player)
+        private Tuple<int, Tuple<int, int>> max(int[,] board, int depth, int player, int valParentMin)
         {
             if (depth == 0)
                 return new Tuple<int, Tuple<int, int>>(score(board, me), null);
@@ -309,17 +309,19 @@ namespace OthelloIA9
             foreach (var move in possibleMoves)
             {
                 int[,] newBoard = apply(board, move, player);
-                int val = min(newBoard, depth - 1, 1 - player).Item1;
+                int val = min(newBoard, depth - 1, 1 - player, maxVal).Item1;
                 if (val > maxVal)
                 {
                     maxVal = val;
                     maxOp = stringToTuple(move.Key);
+                    if (maxVal > valParentMin)
+                        break;
                 }
             }
             return new Tuple<int, Tuple<int, int>>(maxVal, maxOp);
         }
 
-        private Tuple<int, Tuple<int, int>> min(int[,] board, int depth, int player)
+        private Tuple<int, Tuple<int, int>> min(int[,] board, int depth, int player, int valParentMax)
         {
             if (depth == 0)
                 return new Tuple<int, Tuple<int, int>>(score(board, me), null);
@@ -332,17 +334,17 @@ namespace OthelloIA9
             foreach (var move in possibleMoves)
             {
                 int[,] newBoard = apply(board, move, player);
-                int val = max(newBoard, depth - 1, 1 - player).Item1;
+                int val = max(newBoard, depth - 1, 1 - player, minVal).Item1;
                 if (val < minVal)
                 {
                     minVal = val;
                     minOp = stringToTuple(move.Key);
+                    if (minVal < valParentMax)
+                        break;
                 }
             }
             return new Tuple<int, Tuple<int, int>>(minVal, minOp);
         }
-        
-
 
         /*
         private Tuple<int, Tuple<int, int>> minOrMax(int[,] board, int depth, int player, int maximize)
