@@ -407,7 +407,11 @@ namespace OthelloIA9
         }
 
         /// <summary>
-        /// La fonction score qui évalue un état spécifique
+        /// La fonction score qui évalue un état spécifique.
+        /// Nous utilisons une matrice de poids trouvée sur internet pour l'évaluation.
+        /// A chaque case est associée un poids, l'addition des poids des cases affectées au joueur
+        /// définit son score. L'évaluation finale est la différence entre le score du joueur et celui
+        /// de l'opposant.
         /// </summary>
         /// <param name="board">L'état qu'il faut évaluer</param>
         /// <returns>La note attribuée à cet état</returns>
