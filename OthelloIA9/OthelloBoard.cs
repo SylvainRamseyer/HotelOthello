@@ -1,26 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IPlayable;
 
 namespace OthelloIA9
 {
     public class OthelloBoard : IPlayable.IPlayable
     {
+        public const int SIZE_GRID = 8;
 
-        /*
-         * matrice d'indication des poids de chaque cases
-        500  -150 30 10 10 30 -150 500
-        -150 -250 0  0  0  0  -250 -150
-        30   0    1  2  2  1  0    30
-        10   0    2  16 16 2  0    10
-        10   0    2  16 16 2  0    10
-        30   0    1  2  2  1  0    30
-        -150 -250 0  0  0  0  -250 -150
-        500  -150 30 10 10 30 -150 500
-        */
+        // matrice d'indication des poids de chaque cases
         public static readonly int[,] WEIGHT_MATRIX = {
             {500, -150, 30, 10, 10, 30, -150, 500},
             {-150, -250, 0, 0, 0, 0, -250, -150},
@@ -32,6 +20,7 @@ namespace OthelloIA9
             {500, -150, 30, 10, 10, 30, -150, 500}
         };
 
+        // tableau contenant le score des deux joueurs 
         private int[] scores = { 2, 2 };
         
         public int BlacksScore
@@ -52,19 +41,13 @@ namespace OthelloIA9
         //  1 : noir
         private int[,] tiles;
 
+        // sera définit au premier appel de GetNextMove
         private int me, ennemi;
-
-        public const int SIZE_GRID = 8;
-
-        // clé: string représentant un mouvement, exemple : "07"
-        // valeur: liste des tuiles capturées si ce mouvement est effectué
-        //private Dictionary<string, List<Tuple<int, int>>> possibleMoves;
 
         public OthelloBoard()
         {
             // Intialisation
             tiles = new int[SIZE_GRID, SIZE_GRID];
-            //possibleMoves = new Dictionary<string, List<Tuple<int, int>>>();
 
             for (int i = 0; i < SIZE_GRID; i++)
             {
@@ -76,24 +59,44 @@ namespace OthelloIA9
 
             tiles[3, 4] = tiles[4, 3] = 1; // 1 : black
             tiles[3, 3] = tiles[4, 4] = 0; // 0 : white
-
-            //ComputePossibleMoves(1);
         }
-        
+
         #region IPlayable implementation
+
+        /// <summary>
+        /// Returns the IA's name
+        /// </summary>
+        /// <returns></returns>
         public string GetName()
         {
-            return "IA9 PerezRamseyer";
+            return "09_Perez_Ramseyer";
         }
 
+        /// <summary>
+        /// Returns true if the move is valid for specified color
+        /// </summary>
+        /// <param name="column">value between 0 and 7</param>
+        /// <param name="line">value between 0 and 7</param>
+        /// <param name="isWhite"></param>
+        /// <returns></returns>
         public bool IsPlayable(int column, int line, bool isWhite)
         {
-            throw new NotImplementedException();
+            // si computeMove retourne null, c'est que le mouvement n'est pas jouable
+            return computeMove(tiles, column, line, isWhite ? 0 : 1) == null;
         }
 
+        /// <summary>
+        /// Will update the board status if the move is valid and return true
+        /// Will return false otherwise (board is unchanged)
+        /// </summary>
+        /// <param name="column">value between 0 and 7</param>
+        /// <param name="line">value between 0 and 7</param>
+        /// <param name="isWhite">true for white move, false for black move</param>
+        /// <returns></returns>
         public bool PlayMove(int column, int line, bool isWhite)
         {
             int currentPlayer = isWhite ? 0 : 1;
+            // computeMove retourne une liste des cases retournées par ce coup
             List<Tuple<int, int>> catched = computeMove(tiles, column, line, currentPlayer);
             if (catched == null)
                 return false;
@@ -103,76 +106,105 @@ namespace OthelloIA9
             incrementScore(currentPlayer, 1);
 
             // retourne les cases ennemies capturées par ce mouvement
-            foreach (Tuple<int, int> item in catched)
+            foreach (Tuple<int, int> tile in catched)
             {
-                tiles[item.Item1, item.Item2] = currentPlayer;
+                tiles[tile.Item1, tile.Item2] = currentPlayer;
                 // incrémente le score du joueur
                 incrementScore(currentPlayer, 1);
                 // décrémente le score de l'ennemi
                 incrementScore(1 - currentPlayer, -1);
             }
-
-            // Calcul les coups possibles pour le prochain tour
-            //ComputePossibleMoves(1 - currentPlayer);
+            
             return true;
         }
 
+        /// <summary>
+        /// Asks the game engine next (valid) move given a game position
+        /// The board assumes following standard move notation:
+        /// 
+        ///             A B C D E F G H
+        ///             0 1 2 3 4 5 6 7     (first index)
+        ///          0
+        ///          1
+        ///          2        X
+        ///          3            X
+        ///          4
+        ///          5
+        ///          6
+        ///          7
+        ///       
+        ///          Column Line
+        ///  E.g.:    D3, F4 game notation will map to {3,2} resp. {5,3}
+        /// </summary>
+        /// <param name="game">a 2D board with integer values: 0 for white 1 for black and -1 for empty tiles. First index for the column, second index for the line</param>
+        /// <param name="level">an integer value to set the level of the IA, 5 normally</param>
+        /// <param name="whiteTurn">true if white players turn, false otherwise</param>
+        /// <returns>The column and line indices. Will return {-1,-1} as PASS if no possible move </returns>
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
+            // Clone l'état du plateau de jeu pour éviter de travailler directement sur l'attribut de classe
             tiles = (int[,])game.Clone();
+            // C'est GetNextMove qui définit quelle couleur l'IA doit jouer
             me = whiteTurn ? 0 : 1;
             ennemi = 1 - me;
 
-            var possibleMoves = ComputePossibleMoves(tiles, me);
+            if (level == 0)
+            {
+                // si on appelle GetNextMove avec une profondeur de 0, renvoie un mouvement pioché aléatoirement dans la liste des coups possibles
+                var possibleMoves = ComputePossibleMoves(game, me);
+                if(possibleMoves.Count > 0)
+                    return stringToTuple(possibleMoves.ElementAt(new Random().Next(0, possibleMoves.Count)).Key);
+                return new Tuple<int, int>(-1, -1);
+            }
 
-            if (possibleMoves.Count() > 0)
-                return minmax(tiles, level);
-
-            string color = whiteTurn ? "whites" : "blacks";
-            Console.WriteLine($"{color} can't move");
-            // on ne peut pas jouer, on revoie (-1,-1)
-            // on doit calculer les mouvements de l'ennemi parce que PlayMove ne sera pas appelée
-            //ComputePossibleMoves(ennemi);
-            return new Tuple<int, int>(-1, -1);
+            // Appelle l'algorithme récursif. Cette méthode retourne 2 valeurs, l'Item2 est le coup à jouer
+            return minmax(tiles, level, me, int.MaxValue, 1).Item2;
         }
 
+        /// <summary>
+        /// Returns a reference to a 2D array with the board status
+        /// </summary>
+        /// <returns>The 8x8 tiles status</returns>
         public int[,] GetBoard()
         {
             return tiles;
         }
 
+        /// <summary>
+        /// Returns the number of white tiles on the board
+        /// </summary>
+        /// <returns></returns>
         public int GetWhiteScore()
         {
             return WhitesScore;
         }
 
+        /// <summary>
+        /// Returns the number of black tiles
+        /// </summary>
+        /// <returns></returns>
         public int GetBlackScore()
         {
             return BlacksScore;
         }
-
-        private void incrementScore(int player, int delta)
-        {
-            if (player == 1)
-                BlacksScore += delta;
-            else if (player == 0)
-                WhitesScore += delta;
-        }
         #endregion
-        
+
         #region othello algo
 
         /// <summary>
-        /// Peuple le dictionnaire possibleMoves avec tous les mouvements possibles pour ce tour,
-        /// pour le joueur actuel. Chaque mouvement est associé à une liste de tuples qui indique
+        /// Peuple et retourne un dictionnaire avec tous les mouvements possibles pour ce tour,
+        /// pour le joueur donné. Chaque mouvement est associé à une liste de tuples qui indique
         /// les cases capturées si le mouvement est joué.
         /// On refait ce calcul à chaque tour.
         /// </summary>
         public Dictionary<string, List<Tuple<int, int>>> ComputePossibleMoves(int[,] board, int player)
         {
-            //possibleMoves.Clear();
-            Dictionary<string, List<Tuple<int, int>>> possibleMoves = new Dictionary<string, List<Tuple<int, int>>>();
-
+            /// Le dictionnaire à comme clé un mouvement sous forme de string
+            /// (parce que string est hashable, contrairement au Tuple),
+            /// et comme valeur une liste des cases capturées par ce mouvement
+            var possibleMoves = new Dictionary<string, List<Tuple<int, int>>>();
+            
+            // itère sur chaque tuile et peuple le dictionnaire avec les coups possibles
             for (int column = 0; column < SIZE_GRID; column++)
             {
                 for (int line = 0; line < SIZE_GRID; line++)
@@ -187,7 +219,8 @@ namespace OthelloIA9
         }
 
         /// <summary>
-        /// Si le mouvement donné est possible, il est ajouté au dictionnaire possibleMoves.
+        /// Si le coup n'est pas valide, retourn null,
+        /// sinon, retourne une liste des tuiles capturées par ce coup
         /// Un tuile est jouable si :
         /// - l'une de ses voisines est occupée par un ennemi
         /// - l'autre extrémité est occupée par le joueur
@@ -249,31 +282,39 @@ namespace OthelloIA9
                 // on sort de la boucle while lorsque la case x,y n'est pas un ennemi,
                 // maintenant, soit c'est une case vide et on ne fait rien, soit c'est une case
                 // du joueur et donc on capture toutes les cases mise en attente dans temp
-                //if (tiles[x, y] == currentPlayer)
                 if (!outside && board[x, y] == player)
                     catchedTiles.AddRange(temp);
             }
 
-            // si on a rien capturé dans la boucle foreach, le coup n'est pas valide
+            // si on n'a rien capturé dans la boucle foreach, le coup n'est pas valide
             if (catchedTiles.Count == 0)
                 return null;
 
-            // Le coup est valide, on l'ajoute au dictionnaire
+            // Le coup est valide, on retourne les tuiles capturées
             return catchedTiles;
         }
-        #endregion
         
+        // ajoute delta au score de ce joueur
+        private void incrementScore(int player, int delta)
+        {
+            scores[player] += delta;
+        }
+        #endregion
+
         #region tools
+        // Tuple(1, 2) --> "12"
         private string tupleToString(Tuple<int, int> tuple)
         {
             return tupleToString(tuple.Item1, tuple.Item2);
         }
 
+        // 1, 2 --> "12"
         private string tupleToString(int x, int y)
         {
             return $"{x}{y}";
         }
 
+        // "12" --> Tuple(1, 2)
         private Tuple<int, int> stringToTuple(string str)
         {
             int column = str[0] - '0';
@@ -283,103 +324,81 @@ namespace OthelloIA9
         #endregion
         
         #region IA
-        private Tuple<int, int> minmax(int[,] board, int depth)
+        /// <summary>
+        /// Algorithme récursif min-max avec élagage alpha-beta.
+        /// Nous ne fonctionnons pas avec une structure de données arborescante pour l'arbre de décision,
+        /// C'est la récursion qui forme l'arbre dans la méméoire.
+        /// Une amélioration serait de calculer seulement deux étages de plus que le coup d'avant,
+        /// en gardant en mémoire les possibilités de l'opposant et tous les enfants engendrés par chaque possibilité.
+        /// Cela améliorerait grandement les performance de l'algorithme, mais ça nécessiterait une structure de données
+        /// personnalisée et un algorithme itératif.
+        /// Cela est compliqué à mettre en place dans le temps imparti.
+        /// Nous avons donc fait le choix de recalculer l'arbre en entier à chaque fois.
+        /// L'élagage alpha-beta est déjà un gain de temps non négligeable, l'arbre final est bien plus maigre.
+        /// </summary>
+        /// <param name="board">Tableau 2D d'entier représentant l'état du jeu sur lequel appliquer l'algorithme</param>
+        /// <param name="depth">La profondeur qu'il reste à descendre dans l'arbre de décision</param>
+        /// <param name="player">0 pour blanc, 1 pour noir, le joueur dont c'est le tour dans l'état actuel (commute à chaque niveau de profondeur)</param>
+        /// <param name="parentValue">La plus grande/petite valeur dans le niveau supérieur (maximum dans un étage min, minumum dans un étage max)</param>
+        /// <param name="minOrMax">1 pour un étage max (il faut maximiser), -1 pour un étage min</param>
+        /// <returns>la valeur optimale (maximale si on maximise, minimale si on minimise) des enfants et l'opérateur (le mouvement) pour atteindre cette valeur optimale</returns>
+        private Tuple<int, Tuple<int, int>> minmax(int[,] board, int depth, int player, int parentValue, int minOrMax)
         {
+            // Si on atteint une feuille, on calcule et retourne le score de cet état de jeu
             if (depth == 0)
+                // On est dans une feuille, il n'y a donc pas de mouvement enfant à retourner --> null
+                return new Tuple<int, Tuple<int, int>>(score(board), null);
+            // calcule les opérateurs (mouvements) applicables à cet état
+            var possibleMoves = ComputePossibleMoves(board, player);
+            if (possibleMoves.Count == 0)
+                // Si il n'y a pas de mouvement possible, la valeur (-1, -1) doit être retournée (cf. doc de IPlayable)
+                return new Tuple<int, Tuple<int, int>>(score(board), new Tuple<int, int>(-1, -1));
+
+            // optVal contiendra la valeur max si on maximise, on l'initialise à la pire valeur pour s'assurer qu'elle change
+            int optVal = -minOrMax * Int32.MaxValue;
+            // L'opérateur (mouvement) optimal
+            Tuple<int, int> optOp = null;
+            // chaque mouvement possible va créer un état enfant
+            foreach (var move in possibleMoves)
             {
-                var possibleMoves = ComputePossibleMoves(board, me);
-                return stringToTuple(possibleMoves.ElementAt(new Random().Next(0, possibleMoves.Count)).Key);
+                // on récupère le nouvel état
+                int[,] newBoard = apply(board, move, player);
+                // et on rappelle la fonciton récursive en diminuant la profondeur, changeant le joueur et le type de niveau (max ou min)
+                int val = minmax(newBoard, depth - 1, 1 - player, optVal, -minOrMax).Item1;
+                // si la valeur de cet enfant est meilleure que la précédente meilleure, on la sauvegarde
+                if (val * minOrMax > optVal * minOrMax)
+                {
+                    optVal = val;
+                    optOp = stringToTuple(move.Key); // la clé est une string, il faut juste la convertir en un mouvement
+                    // Alpha-beta :
+                    if (optVal * minOrMax > parentValue * minOrMax)
+                        // on coupe les prochaines branches de l'arbre si la valeur est déjà meilleure que celle de l'étage parent
+                        // c'est-à-dire on arrête la boucle, on ne prend pas en considération lesprochains mouvements frères
+                        break;
+                }
             }
-
-            return max(board, depth, me, Int32.MaxValue).Item2;
-            //return minOrMax(board, depth, me, 1).Item2;
+            return new Tuple<int, Tuple<int, int>>(optVal, optOp);
         }
-
         
-        private Tuple<int, Tuple<int, int>> max(int[,] board, int depth, int player, int valParentMin)
-        {
-            if (depth == 0)
-                return new Tuple<int, Tuple<int, int>>(score(board, me), null);
-            var possibleMoves = ComputePossibleMoves(board, player);
-            if (possibleMoves.Count == 0)
-                return new Tuple<int, Tuple<int, int>>(score(board, me), null);
-
-            int maxVal = Int32.MinValue;
-            Tuple<int, int> maxOp = null;
-            foreach (var move in possibleMoves)
-            {
-                int[,] newBoard = apply(board, move, player);
-                int val = min(newBoard, depth - 1, 1 - player, maxVal).Item1;
-                if (val > maxVal)
-                {
-                    maxVal = val;
-                    maxOp = stringToTuple(move.Key);
-                    if (maxVal > valParentMin)
-                        break;
-                }
-            }
-            return new Tuple<int, Tuple<int, int>>(maxVal, maxOp);
-        }
-
-        private Tuple<int, Tuple<int, int>> min(int[,] board, int depth, int player, int valParentMax)
-        {
-            if (depth == 0)
-                return new Tuple<int, Tuple<int, int>>(score(board, me), null);
-            var possibleMoves = ComputePossibleMoves(board, player);
-            if (possibleMoves.Count == 0)
-                return new Tuple<int, Tuple<int, int>>(score(board, me), null);
-
-            int minVal = Int32.MaxValue;
-            Tuple<int, int> minOp = null;
-            foreach (var move in possibleMoves)
-            {
-                int[,] newBoard = apply(board, move, player);
-                int val = max(newBoard, depth - 1, 1 - player, minVal).Item1;
-                if (val < minVal)
-                {
-                    minVal = val;
-                    minOp = stringToTuple(move.Key);
-                    if (minVal < valParentMax)
-                        break;
-                }
-            }
-            return new Tuple<int, Tuple<int, int>>(minVal, minOp);
-        }
-
-        /*
-        private Tuple<int, Tuple<int, int>> minOrMax(int[,] board, int depth, int player, int maximize)
-        {
-            if (depth == 0)
-                return new Tuple<int, Tuple<int, int>>(maximize * score(board, player), null);
-            var possibleMoves = ComputePossibleMoves(board, player);
-            if (possibleMoves.Count == 0)
-                return new Tuple<int, Tuple<int, int>>(maximize * score(board, player), null);
-
-            int maxVal = Int32.MinValue;
-            Tuple<int, int> maxOp = null;
-            foreach (var move in possibleMoves)
-            {
-                int[,] newBoard = apply(board, move, player);
-                int val = minOrMax(newBoard, depth - 1, 1 - player, -maximize).Item1;
-                if (val > maxVal)
-                {
-                    maxVal = val;
-                    maxOp = stringToTuple(move.Key);
-                }
-            }
-            return new Tuple<int, Tuple<int, int>>(maxVal, maxOp);
-        }
-        */
-
-
+        /// <summary>
+        /// Applique le mouvement donné à l'état donné et retourne un nouvel état
+        /// </summary>
+        /// <param name="board">L'état du plateau sur lequel appliquer l'opérateur</param>
+        /// <param name="move">L'opérateur (le mouvement) : un élément de dictionnaire avec clé: mouvement en forme de string, valeur: les tuiles capturées par ce mouvement</param>
+        /// <param name="player">0 ou 1, le joueur dont c'est le tour à ce moment</param>
+        /// <returns>Un nouvel état du plateau de jeu</returns>
         private int[,] apply(int[,] board, KeyValuePair<string, List<Tuple<int, int>>> move, int player)
         {
+            // Il faut cloner l'état, le tableau étant de type reference-type, on ne peut pas partager le même
+            // état dans différents noeuds de l'arbre
             int[,] newBoard = (int[,]) board.Clone();
 
+            // récupère le mouvement joué
             var tile = stringToTuple(move.Key);
+            // capture cette case
             newBoard[tile.Item1, tile.Item2] = player;
 
-            // retourne les cases ennemies capturées par ce mouvement
+            // affecte les cases ennemies capturées par ce mouvement au joueur
             foreach (Tuple<int, int> item in move.Value)
             {
                 newBoard[item.Item1, item.Item2] = player;
@@ -387,19 +406,30 @@ namespace OthelloIA9
             return newBoard;
         }
 
-        private int score(int[,] board, int player)
+        /// <summary>
+        /// La fonction score qui évalue un état spécifique
+        /// </summary>
+        /// <param name="board">L'état qu'il faut évaluer</param>
+        /// <returns>La note attribuée à cet état</returns>
+        private int score(int[,] board)
         {
+            // tableau contenant le score des blancs [0] et celui des noirs [1]
             int[] scores = { 0, 0 };
+            // itère sur toutes les cases du plateau de jeu
             for (int y = 0; y < SIZE_GRID; y++)
             {
                 for (int x = 0; x < SIZE_GRID; x++)
                 {
+                    // si la case n'est pas vide
                     if (board[x, y] != -1)
+                        // Ajoute le poids de cette case au score du joueur qui la détient
                         scores[board[x, y]] += WEIGHT_MATRIX[x,y];
                 }
             }
             // mon score moins le score de l'autre
-            return scores[player] - scores[1 - player];
+            // on prend en considération les deux scores pour être plus juste dans l'évaluation
+            // (un état est meilleur pour un joueur si il est pire pour son opposant) 
+            return scores[me] - scores[1 - me];
         }
 
         #endregion

@@ -14,7 +14,6 @@ namespace HotelOthelloTester
     {
         static void Main(string[] args)
         {
-            // new OthelloText();
             OthelloBoard[] IAs = { new OthelloBoard(), new OthelloBoard() };
         
             int[,] tiles = new int[8, 8];
@@ -37,7 +36,7 @@ namespace HotelOthelloTester
                 debug(tiles);
                 Console.ReadKey();
 
-                var move = IAs[whitesTurn ? 1 : 0].GetNextMove(tiles, whitesTurn ? 6 : 1, whitesTurn);
+                var move = IAs[whitesTurn ? 1 : 0].GetNextMove(tiles, whitesTurn ? 1 : 5, whitesTurn);
                 Console.WriteLine($"player {(whitesTurn?0:1)} {move}");
                 if(move.Item1 == -1 && move.Item2 == -1)
                 {
